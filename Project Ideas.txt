@@ -1,1 +1,5 @@
 Perling Noise flow field - Create a scenery where game objects use perlin noise to create a random, smooth and cool looking movement style similar to flocking of birds.
+
+
+Procedural trees - Create a small simulation of trees springing to life from tiny seeds. Trees are
+generated using Fractal algorithms.
