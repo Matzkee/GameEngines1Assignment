@@ -15,7 +15,8 @@ public class TreeMaker : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		currentPos = transform.position;
-		Branch trunk = new Branch (currentPos, Vector3.up * branchLength);
+        transform.Translate(Vector3.up * branchLength);
+        Branch trunk = new Branch (currentPos, transform.position);
 		branches.Add (trunk);
 		BranchOut (branchLength);
 	}
@@ -29,35 +30,39 @@ public class TreeMaker : MonoBehaviour {
 		Vector3 previous; 	// Store the starting vector location
 		Vector3 next; 		// Store the next vector location
 
-		previous = transform.position;
-		transform.Translate (Vector3.up * len);
+	    previous = transform.position;
 
-		len *= 0.7f;
+        //Debug.Log("New branch: "+previous+ " - "+next);
+        len *= 0.8f;
 
-		if(len >= 3){
-			// Rotate vector to the left
-			transform.Rotate (Vector3.forward * branchAngle);
-			next = transform.position;
-			nextBranch = new Branch (previous, next);
-			branches.Add (nextBranch);
+		if(len > 3){
+            previous = transform.position;
+            // Rotate vector to the left
+            transform.Rotate (Vector3.forward * branchAngle);
+		    transform.Translate (Vector3.up * len);
+		    next = transform.position;
+            // Add the branch for visual purposes
+            nextBranch = new Branch(previous, next);
+            branches.Add(nextBranch);
 			
 			BranchOut (len);
 			
 			//transform.Translate (Vector3.up * len);
 			
-			transform.position = previous;
-			
-			// Rotate vector to the right
-			transform.Rotate (Vector3.forward * -branchAngle * 2);
 			next = transform.position;
 			nextBranch = new Branch (previous, next);
+			transform.position = previous;
 			branches.Add (nextBranch);
+            //Debug.Log("New branch: " + previous + " - " + next);
+
+            // Rotate vector to the right
+            transform.Rotate (Vector3.forward * -branchAngle * 2);
 			
 			BranchOut (len);
 			
 			//transform.Translate (Vector3.up * len);
-			transform.position = previous;
 		}
+		transform.position = previous;
 	}
 
 	void OnDrawGizmos(){
