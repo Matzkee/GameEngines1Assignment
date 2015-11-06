@@ -28,9 +28,10 @@ public class LSystem : MonoBehaviour {
     public float branchAngle = 25.0f;
 
     private int generation = 0;
+    private Stack<Coord> coordStack = new Stack<Coord>();
 
     string alphabet = "F";
-    string ruleset = "FF+[+F-F-F]-[-F+F+F]";
+    string[] ruleset = { "FF+[+F-F-F]-[-F+F+F]" };
 
 
     void Start () {
@@ -54,7 +55,7 @@ public class LSystem : MonoBehaviour {
             char k = alphabet[j];
             if (k == 'F')
             {
-                next.Append(ruleset);
+                next.Append(ruleset[0]);
             }
             else
             {
@@ -63,15 +64,12 @@ public class LSystem : MonoBehaviour {
         }
         alphabet = next.ToString();
         generation += 1;
-        Debug.Log("Generation " + generation + ": " + alphabet);
+        Debug.Log("Generation " + generation + " : "+alphabet);
     }
 
     void DrawTree(float len)
     {
-        Vector3 lastPosition = transform.position;     // Store the last position vector
         Vector3 currentPosition;
-        Quaternion lastRotation = transform.rotation;    // Store the rotation
-
 
         for (int i = 0; i < alphabet.Length; i++)
         {
@@ -81,10 +79,6 @@ public class LSystem : MonoBehaviour {
                 currentPosition = transform.position;
                 transform.Translate(Vector3.up * len);
                 branches.Add(new Branch(currentPosition, transform.position));
-            }
-            else if (c == 'F')
-            {
-                transform.Translate(Vector3.up * len);
             }
             else if (c == '+')
             {
@@ -96,13 +90,14 @@ public class LSystem : MonoBehaviour {
             }
             else if (c == '[')
             {
-                lastPosition = transform.position;
-                lastRotation = transform.rotation;
+                Coord currentCoord = new Coord(transform.position, transform.rotation);
+                coordStack.Push(currentCoord);
             }
             else if (c == ']')
             {
-                transform.position = lastPosition;
-                transform.rotation = lastRotation;
+                Coord lastCord = coordStack.Pop();
+                transform.position = lastCord.branchPos;
+                transform.rotation = lastCord.branchRot;
             }
         }
     }
@@ -113,6 +108,18 @@ public class LSystem : MonoBehaviour {
         {
             Gizmos.color = Color.white;
             Gizmos.DrawLine(b.GetStart(), b.GetEnd());
+        }
+    }
+
+    class Coord
+    {
+        public Vector3 branchPos;
+        public Quaternion branchRot;
+
+        public Coord(Vector3 _branchPos, Quaternion _branchRot)
+        {
+            branchPos = _branchPos;
+            branchRot = _branchRot;
         }
     }
 
