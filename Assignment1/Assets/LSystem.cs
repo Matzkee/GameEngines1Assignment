@@ -24,15 +24,13 @@ public class LSystem : MonoBehaviour {
 
     List<Branch> branches = new List<Branch>();
 
-    
-
     public float branchLength = 3.0f;
-    public float branchAngle = 25 * Mathf.Deg2Rad;
+    public float branchAngle = 25.0f;
 
     private int generation = 0;
 
     string alphabet = "F";
-    string ruleset = "FF+[F-F-F]-[-F+F+F]";
+    string ruleset = "FF+[+F-F-F]-[-F+F+F]";
 
 
     void Start () {
@@ -42,16 +40,14 @@ public class LSystem : MonoBehaviour {
 	void Update () {
         if (Input.GetMouseButtonDown(0))
         {
-            NextGeneration(branchLength);
+            NextGeneration();
+            DrawTree(branchLength);
             branchLength *= 0.5f;
         }
     }
 
-    void NextGeneration(float len)
+    void NextGeneration()
     {
-        Vector3 lastPosition = transform.position;     // Store the last position vector
-        Quaternion lastRotation = transform.rotation;    // Store the rotation
-
         StringBuilder next = new StringBuilder();
         for (int j = 0; j < alphabet.Length; j++)
         {
@@ -60,27 +56,43 @@ public class LSystem : MonoBehaviour {
             {
                 next.Append(ruleset);
             }
+            else
+            {
+                next.Append(k);
+            }
         }
         alphabet = next.ToString();
         generation += 1;
         Debug.Log("Generation " + generation + ": " + alphabet);
-        
+    }
+
+    void DrawTree(float len)
+    {
+        Vector3 lastPosition = transform.position;     // Store the last position vector
+        Vector3 currentPosition;
+        Quaternion lastRotation = transform.rotation;    // Store the rotation
+
+
         for (int i = 0; i < alphabet.Length; i++)
         {
             char c = alphabet[i];
             if (c == 'F')
             {
+                currentPosition = transform.position;
                 transform.Translate(Vector3.up * len);
-                branches.Add(new Branch(lastPosition, transform.position));
-                Debug.Log("New Branch: "+lastPosition+" "+transform.position);
+                branches.Add(new Branch(currentPosition, transform.position));
+            }
+            else if (c == 'F')
+            {
+                transform.Translate(Vector3.up * len);
             }
             else if (c == '+')
             {
-                transform.Rotate(Vector3.forward * branchAngle * 2);
+                transform.Rotate(Vector3.forward * branchAngle);
             }
             else if (c == '-')
             {
-                transform.Rotate(Vector3.forward * -branchAngle * 2);
+                transform.Rotate(Vector3.forward * -branchAngle);
             }
             else if (c == '[')
             {

@@ -7,7 +7,7 @@ public class TreeMaker : MonoBehaviour {
 	List<Branch> branches = new List<Branch> ();
 
 	public float branchLength = 7;
-	public float branchAngle = Mathf.PI / 6;
+	public float branchAngle = 20;
 
 	Vector3 currentPos;
 	// Use this for initialization
