@@ -11,16 +11,29 @@ using System.Text;
             Alphabet: A B
             Aciom: A
             Rules: (A -> AB), (B -> A)
+
+        Now Lets create our alphabet
+        F: translate + add branch to the list
+        G: 
+        +: rotate(angle)
+        -: rotate(-angle)
+        [: save position & rotation
+        ]: restore position & rotation
     */
 public class LSystem : MonoBehaviour {
 
     List<Branch> branches = new List<Branch>();
 
-    public float branchLength = 7;
+    
+
+    public float branchLength = 5.0f;
     public float branchAngle = Mathf.PI / 6;
+
     private int generation = 0;
 
-    string alphabet = "A";
+    string alphabet = "F";
+    string ruleset = "FF+[F-F-F]-[-F+F+F]";
+
 
     void Start () {
         Debug.Log("Generation " + generation + ": " + alphabet);
@@ -28,22 +41,31 @@ public class LSystem : MonoBehaviour {
 	
 	void Update () {
         if (Input.GetMouseButtonDown(0))
+        {
             NextGeneration(branchLength);
+            branchLength *= 0.8f;
+        }
     }
 
     void NextGeneration(float len)
     {
-        Vector3 lastPosition; 	    // Store the starting vector location
-		Vector3 currentPosition; 	// Store the next vector location
-        Quaternion lastRotation;    // Store the rotation
-    // Now Lets create our alphabet
-    // F: translate + add branch to the list
-    // G: 
-    // +: rotate(angle)
-    // -: rotate(-angle)
-    // [: save position & rotation
-    // ]: restore position & rotation
+        Vector3 lastPosition = new Vector3();     // Store the starting vector location
+        Vector3 currentPosition;    // Store the next vector location
+        Quaternion lastRotation = new Quaternion();    // Store the rotation
+
         StringBuilder next = new StringBuilder();
+        for (int j = 0; j < alphabet.Length; j++)
+        {
+            char k = alphabet[j];
+            if (k == 'F')
+            {
+                next.Append(ruleset);
+            }
+        }
+        alphabet = next.ToString();
+        generation += 1;
+        Debug.Log("Generation " + generation + ": " + alphabet);
+        
         for (int i = 0; i < alphabet.Length; i++)
         {
             char c = alphabet[i];
@@ -74,9 +96,15 @@ public class LSystem : MonoBehaviour {
                 transform.rotation = lastRotation;
             }
         }
-        alphabet = next.ToString();
-        generation += 1;
-        Debug.Log("Generation " + generation + ": " + alphabet);
+    }
+
+    void OnDrawGizmos()
+    {
+        foreach (Branch b in branches)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(b.GetStart(), b.GetEnd());
+        }
     }
 
     class Branch
@@ -97,15 +125,6 @@ public class LSystem : MonoBehaviour {
         public Vector3 GetEnd()
         {
             return end;
-        }
-    }
-
-    void OnDrawGizmos()
-    {
-        foreach (Branch b in branches)
-        {
-            Gizmos.color = Color.white;
-            Gizmos.DrawLine(b.GetStart(), b.GetEnd());
         }
     }
 }
