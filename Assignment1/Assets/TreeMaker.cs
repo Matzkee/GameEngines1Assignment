@@ -26,14 +26,12 @@ public class TreeMaker : MonoBehaviour {
 
 	void BranchOut(float len){
 		Vector3 lastPosition; 	    // Store the starting vector location
-		Vector3 currentPosition; 	// Store the next vector location
         Quaternion lastRotation;    // Store the rotation
 
         //Debug.Log("New branch: "+previous+ " - "+next);
         lastPosition = transform.position;
         transform.Translate(Vector3.up * len);
-        currentPosition = transform.position;
-        branches.Add(new Branch(lastPosition, currentPosition));
+        branches.Add(new Branch(lastPosition, transform.position));
 
         len *= 0.8f;
 

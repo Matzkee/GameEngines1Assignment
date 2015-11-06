@@ -26,8 +26,8 @@ public class LSystem : MonoBehaviour {
 
     
 
-    public float branchLength = 5.0f;
-    public float branchAngle = Mathf.PI / 6;
+    public float branchLength = 3.0f;
+    public float branchAngle = 25 * Mathf.Deg2Rad;
 
     private int generation = 0;
 
@@ -43,15 +43,14 @@ public class LSystem : MonoBehaviour {
         if (Input.GetMouseButtonDown(0))
         {
             NextGeneration(branchLength);
-            branchLength *= 0.8f;
+            branchLength *= 0.5f;
         }
     }
 
     void NextGeneration(float len)
     {
-        Vector3 lastPosition = new Vector3();     // Store the starting vector location
-        Vector3 currentPosition;    // Store the next vector location
-        Quaternion lastRotation = new Quaternion();    // Store the rotation
+        Vector3 lastPosition = transform.position;     // Store the last position vector
+        Quaternion lastRotation = transform.rotation;    // Store the rotation
 
         StringBuilder next = new StringBuilder();
         for (int j = 0; j < alphabet.Length; j++)
@@ -69,21 +68,19 @@ public class LSystem : MonoBehaviour {
         for (int i = 0; i < alphabet.Length; i++)
         {
             char c = alphabet[i];
-
             if (c == 'F')
             {
-                lastPosition = transform.position;
                 transform.Translate(Vector3.up * len);
-                currentPosition = transform.position;
-                branches.Add(new Branch(lastPosition, currentPosition));
+                branches.Add(new Branch(lastPosition, transform.position));
+                Debug.Log("New Branch: "+lastPosition+" "+transform.position);
             }
             else if (c == '+')
             {
-                transform.Rotate(Vector3.forward * branchAngle);
+                transform.Rotate(Vector3.forward * branchAngle * 2);
             }
             else if (c == '-')
             {
-                transform.Rotate(Vector3.forward * -branchAngle);
+                transform.Rotate(Vector3.forward * -branchAngle * 2);
             }
             else if (c == '[')
             {
