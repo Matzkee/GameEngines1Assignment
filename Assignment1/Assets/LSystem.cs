@@ -20,39 +20,63 @@ public class LSystem : MonoBehaviour {
     public float branchAngle = Mathf.PI / 6;
     private int generation = 0;
 
-    string current = "A";
-    // Use this for initialization
+    string alphabet = "A";
+
     void Start () {
-        Debug.Log("Generation " + generation + ": " + current);
+        Debug.Log("Generation " + generation + ": " + alphabet);
     }
 	
-	// Update is called once per frame
 	void Update () {
         if (Input.GetMouseButtonDown(0))
-            NextGeneration();
+            NextGeneration(branchLength);
     }
 
-    void NextGeneration()
+    void NextGeneration(float len)
     {
-    // Since the string can get very large it is recommended to use
-    // StringBuilder instead of string as it deals with concatenating in
-    // much nicer way than string
-    StringBuilder next = new StringBuilder();
-        for (int i = 0; i < current.Length; i++)
+        Vector3 lastPosition; 	    // Store the starting vector location
+		Vector3 currentPosition; 	// Store the next vector location
+        Quaternion lastRotation;    // Store the rotation
+    // Now Lets create our alphabet
+    // F: translate + add branch to the list
+    // G: 
+    // +: rotate(angle)
+    // -: rotate(-angle)
+    // [: save position & rotation
+    // ]: restore position & rotation
+        StringBuilder next = new StringBuilder();
+        for (int i = 0; i < alphabet.Length; i++)
         {
-            char c = current[i];
-            if (c == 'A')
+            char c = alphabet[i];
+
+            if (c == 'F')
             {
-                next.Append("AB");
+                lastPosition = transform.position;
+                transform.Translate(Vector3.up * len);
+                currentPosition = transform.position;
+                branches.Add(new Branch(lastPosition, currentPosition));
             }
-            else if (c == 'B')
+            else if (c == '+')
             {
-                next.Append("A");
+                transform.Rotate(Vector3.forward * branchAngle);
+            }
+            else if (c == '-')
+            {
+                transform.Rotate(Vector3.forward * -branchAngle);
+            }
+            else if (c == '[')
+            {
+                lastPosition = transform.position;
+                lastRotation = transform.rotation;
+            }
+            else if (c == ']')
+            {
+                transform.position = lastPosition;
+                transform.rotation = lastRotation;
             }
         }
-        current = next.ToString();
+        alphabet = next.ToString();
         generation += 1;
-        Debug.Log("Generation " + generation + ": " + current);
+        Debug.Log("Generation " + generation + ": " + alphabet);
     }
 
     class Branch
@@ -73,6 +97,15 @@ public class LSystem : MonoBehaviour {
         public Vector3 GetEnd()
         {
             return end;
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        foreach (Branch b in branches)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(b.GetStart(), b.GetEnd());
         }
     }
 }
