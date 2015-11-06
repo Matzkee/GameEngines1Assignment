@@ -9,8 +9,6 @@ public class TreeMaker : MonoBehaviour {
 	public float branchLength = 7;
 	public float branchAngle = Mathf.PI / 6;
 
-	Branch nextBranch;
-
 	Vector3 currentPos;
 	// Use this for initialization
 	void Start () {
@@ -18,7 +16,7 @@ public class TreeMaker : MonoBehaviour {
         transform.Translate(Vector3.up * branchLength);
         Branch trunk = new Branch (currentPos, transform.position);
 		branches.Add (trunk);
-		BranchOut (branchLength);
+        BranchOut (branchLength);
 	}
 	
 	// Update is called once per frame
@@ -27,42 +25,34 @@ public class TreeMaker : MonoBehaviour {
 	}
 
 	void BranchOut(float len){
-		Vector3 previous; 	// Store the starting vector location
-		Vector3 next; 		// Store the next vector location
-
-	    previous = transform.position;
+		Vector3 lastPosition; 	    // Store the starting vector location
+		Vector3 currentPosition; 	// Store the next vector location
+        Quaternion lastRotation;    // Store the rotation
 
         //Debug.Log("New branch: "+previous+ " - "+next);
+        lastPosition = transform.position;
+        transform.Translate(Vector3.up * len);
+        currentPosition = transform.position;
+        branches.Add(new Branch(lastPosition, currentPosition));
+
         len *= 0.8f;
 
-		if(len > 3){
-            previous = transform.position;
-            // Rotate vector to the left
+		if(len > 2){
+            lastPosition = transform.position;
+            lastRotation = transform.rotation;
             transform.Rotate (Vector3.forward * branchAngle);
-		    transform.Translate (Vector3.up * len);
-		    next = transform.position;
-            // Add the branch for visual purposes
-            nextBranch = new Branch(previous, next);
-            branches.Add(nextBranch);
-			
 			BranchOut (len);
-			
-			//transform.Translate (Vector3.up * len);
-			
-			next = transform.position;
-			nextBranch = new Branch (previous, next);
-			transform.position = previous;
-			branches.Add (nextBranch);
-            //Debug.Log("New branch: " + previous + " - " + next);
+            transform.position = lastPosition;
+            transform.rotation = lastRotation;
 
-            // Rotate vector to the right
-            transform.Rotate (Vector3.forward * -branchAngle * 2);
-			
-			BranchOut (len);
-			
-			//transform.Translate (Vector3.up * len);
-		}
-		transform.position = previous;
+            lastPosition = transform.position;
+            lastRotation = transform.rotation;
+            transform.Rotate(Vector3.forward * -branchAngle);
+            BranchOut(len);
+            transform.position = lastPosition;
+            transform.rotation = lastRotation;
+        }
+		//transform.position = lastPosition;
 	}
 
 	void OnDrawGizmos(){
