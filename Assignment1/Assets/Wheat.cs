@@ -20,25 +20,28 @@ using System.Text;
         [: save position & rotation
         ]: restore position & rotation
     */
-public class LSystem : MonoBehaviour {
+public class Wheat : MonoBehaviour
+{
 
     List<Branch> branches = new List<Branch>();
 
-    public float branchLength = 3.0f;
-    public float branchAngle = 25.0f;
+    public float branchLength = 5.0f;
+    public float branchAngle = 22.5f;
 
     private int generation = 0;
     private Stack<Coord> coordStack = new Stack<Coord>();
 
-    string alphabet = "F";
-    string[] ruleset = { "FF+[+F-F-F]-[-F+F+F]" };
+    string alphabet = "X";
+    string[] ruleset = { "F-[[X]+X]+F[+FX]-X", "FF" };
 
 
-    void Start () {
-        Debug.Log("Generation " + generation + ": " + alphabet);
+    void Start()
+    {
+        Debug.Log("Wheat Generation: " + generation + ": "+alphabet);
     }
-	
-	void Update () {
+
+    void Update()
+    {
         if (Input.GetMouseButtonDown(0))
         {
             NextGeneration();
@@ -53,9 +56,13 @@ public class LSystem : MonoBehaviour {
         for (int j = 0; j < alphabet.Length; j++)
         {
             char k = alphabet[j];
-            if (k == 'F')
+            if (k == 'X')
             {
                 next.Append(ruleset[0]);
+            }
+            else if (k == 'F')
+            {
+                next.Append(ruleset[1]);
             }
             else
             {
@@ -64,7 +71,7 @@ public class LSystem : MonoBehaviour {
         }
         alphabet = next.ToString();
         generation += 1;
-        Debug.Log("Generation " + generation + " : "+alphabet);
+        Debug.Log("Wheat Generation: " + generation + ": " + alphabet);
     }
 
     void DrawTree(float len)
