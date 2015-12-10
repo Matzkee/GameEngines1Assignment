@@ -1,6 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+/*  L-Systems contains 3 main components:
+        Alphabet - composition of characters which the program works with
+        Axiom - an Initial state of the system using characters from alphabet
+        Rules - rules of an L-system applied recursively (predecessor & successor)
 
+        Example:
+            Alphabet: A B
+            Aciom: A
+            Rules: (A -> AB), (B -> A)
+
+        Now Lets create our alphabet
+        F: translate + add branch to the list
+        G: 
+        +: rotate(angle)
+        -: rotate(-angle)
+        [: save position & rotation
+        ]: restore position & rotation
+    */
 public class Turtle{
 
     float length;

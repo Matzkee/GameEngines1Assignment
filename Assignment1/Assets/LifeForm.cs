@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LSysTree : MonoBehaviour {
+public class LifeForm : MonoBehaviour {
 
     Rule[] ruleset;
     LSystem lsystem;
@@ -12,12 +12,20 @@ public class LSysTree : MonoBehaviour {
     public float length = 5.0f;
     public float angle = 22.5f;
     public float lengthRatio = 0.7f;
+    public string axiom;
+    public char[] ruleChars;
+    public string[] ruleStrings;
 
 	void Start () {
-        ruleset = new Rule[1];
-        ruleset[0] = new Rule('F',"FF+[+F-F-F]-[-F+F+F]");
-
-        lsystem = new LSystem("F",ruleset);
+        if (ruleChars != null)
+        {
+            ruleset = new Rule[ruleChars.Length];
+            for(int i = 0; i < ruleChars.Length; i++)
+            {
+                ruleset[i] = new Rule(ruleChars[i], ruleStrings[i]);
+            }
+        }
+        lsystem = new LSystem(axiom,ruleset);
 
         turtle = new Turtle(lsystem.GetAlphabet(),length,angle, gameObject);
     }
