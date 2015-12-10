@@ -34,7 +34,8 @@ public class LifeForm : MonoBehaviour {
 	void Update () {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 current = transform.position;
+            Vector3 currentP = transform.position;
+            Quaternion currentR = transform.rotation;
             lsystem.Generate();
             turtle.SetAlphabet(lsystem.GetAlphabet());
             turtle.DrawPlant();
@@ -42,7 +43,8 @@ public class LifeForm : MonoBehaviour {
             turtle.ChangeLength(lengthRatio);
 
             GetTreeBranches();
-            transform.position = current;
+            transform.position = currentP;
+            transform.rotation = currentR;
         }
     }
 

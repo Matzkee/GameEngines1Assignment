@@ -34,20 +34,17 @@ public class LSystem{
             string toReplace = "";
             // Get the next character from alphabet
             char current = alphabet[i];
-
+            // Add the character in case no rules are matched
+            toReplace += current;
             // Iterate through the rules and append the toReplace string
-            // if match is not found, add the current character to string
-            // at the end append the string
+            // at the end append the next string buffer
             for (int j = 0; j< rules.Length; j++)
             {
                 char a = rules[j].GetA();
                 if (a == current)
                 {
                     toReplace = rules[j].GetB();
-                }
-                else
-                {
-                    toReplace += current;
+                    break;
                 }
             }
             next.Append(toReplace);
