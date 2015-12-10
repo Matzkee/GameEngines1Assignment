@@ -74,6 +74,7 @@ public class Turtle{
             }
             else if (c == ']')
             {
+                branches[branches.Count - 1].SetColor(Color.green);
                 Coord lastCord = coordStack.Pop();
                 treeTransform.position = lastCord.branchPos;
                 treeTransform.rotation = lastCord.branchRot;

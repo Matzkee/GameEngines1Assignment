@@ -61,7 +61,7 @@ public class LifeForm : MonoBehaviour {
         {
             foreach (Segment b in branches)
             {
-                Gizmos.color = Color.white;
+                Gizmos.color = b.GetColor();
                 Gizmos.DrawLine(b.GetStart(), b.GetEnd());
             }
         }
