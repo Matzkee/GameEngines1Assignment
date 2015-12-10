@@ -7,10 +7,15 @@ public class Turtle : MonoBehaviour {
     float length;
     float angle;
     string alphabetToDraw;
-    Stack<Coord> coordStack = new Stack<Coord>();
+
+    List<Branch> branches;
+    Stack<Coord> coordStack;
 
     public Turtle(string a, float _length, float _angle)
     {
+        branches = new List<Branch>();
+        coordStack = new Stack<Coord>();
+
         alphabetToDraw = a;
         length = _length;
         angle = _angle;
@@ -18,22 +23,27 @@ public class Turtle : MonoBehaviour {
 
     public void drawPlant()
     {
-        for (int i = 0; i < alphabet.Length; i++)
+        // Make a new branches list
+        branches = new List<Branch>();
+        Vector3 currentPosition;
+
+        // Follow the action depending on current character in alphabet
+        for (int i = 0; i < alphabetToDraw.Length; i++)
         {
-            char c = alphabet[i];
+            char c = alphabetToDraw[i];
             if (c == 'F')
             {
                 currentPosition = transform.position;
-                transform.Translate(Vector3.up * len);
+                transform.Translate(Vector3.up * length);
                 branches.Add(new Branch(currentPosition, transform.position));
             }
             else if (c == '+')
             {
-                transform.Rotate(Vector3.forward * branchAngle);
+                transform.Rotate(Vector3.forward * angle);
             }
             else if (c == '-')
             {
-                transform.Rotate(Vector3.forward * -branchAngle);
+                transform.Rotate(Vector3.forward * -angle);
             }
             else if (c == '[')
             {
@@ -49,7 +59,8 @@ public class Turtle : MonoBehaviour {
         }
     }
 
-    class Coord
+
+    public class Coord
     {
         public Vector3 branchPos;
         public Quaternion branchRot;
@@ -61,7 +72,7 @@ public class Turtle : MonoBehaviour {
         }
     }
 
-    class Branch
+    public class Branch
     {
         Vector3 start;
         Vector3 end;
@@ -79,6 +90,31 @@ public class Turtle : MonoBehaviour {
         public Vector3 GetEnd()
         {
             return end;
+        }
+    }
+    public void SetLength(float newLength)
+    {
+        length = newLength;
+    }
+    public void ChangeLength(float changeRatio)
+    {
+        length *= changeRatio;
+    }
+    public void SetAngle(float newAngle)
+    {
+        angle = newAngle;
+    }
+    public void SetAlphabet(string newAlphabet)
+    {
+        alphabetToDraw = newAlphabet;
+    }
+
+    void OnDrawGizmos()
+    {
+        foreach (Branch b in branches)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(b.GetStart(), b.GetEnd());
         }
     }
 }
