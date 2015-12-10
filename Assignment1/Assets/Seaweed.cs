@@ -64,7 +64,7 @@ public class Seaweed : MonoBehaviour {
         }
         alphabet = next.ToString();
         generation += 1;
-        Debug.Log("Seaweed Generation: " + generation);
+        Debug.Log("Seaweed Generation: " + generation + " Alphabet: "+alphabet);
     }
 
     void DrawTree(float len)

@@ -71,7 +71,7 @@ public class Wheat : MonoBehaviour
         }
         alphabet = next.ToString();
         generation += 1;
-        Debug.Log("Wheat Generation: " + generation + ": " + alphabet);
+        //Debug.Log("Wheat Generation: " + generation + ": " + alphabet);
     }
 
     void DrawTree(float len)
