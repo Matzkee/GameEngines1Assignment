@@ -21,7 +21,7 @@ using System.Collections.Generic;
 public class Turtle{
 
     float length;
-    float angle;
+    float angleX, angleZ;
     string alphabetToDraw;
 
     List<Segment> branches;
@@ -30,7 +30,7 @@ public class Turtle{
     GameObject currentTree;
     Transform treeTransform;
 
-    public Turtle(string a, float _length, float _angle, GameObject _currentTree)
+    public Turtle(string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
     {
         currentTree = _currentTree;
         treeTransform = currentTree.transform;
@@ -39,7 +39,8 @@ public class Turtle{
 
         alphabetToDraw = a;
         length = _length;
-        angle = _angle;
+        angleX = _angleX;
+        angleZ = _angleZ;
     }
 
     public void DrawPlant()
@@ -60,11 +61,11 @@ public class Turtle{
             }
             else if (c == '+')
             {
-                treeTransform.Rotate(Vector3.right * angle);
+                treeTransform.Rotate(Vector3.right * angleX);
             }
             else if (c == '-')
             {
-                treeTransform.Rotate(Vector3.right * -angle);
+                treeTransform.Rotate(Vector3.right * -angleX);
             }
             else if (c == '[')
             {
@@ -81,10 +82,10 @@ public class Turtle{
             //Experimental
             else if (c == 'z')
             {
-                treeTransform.Rotate(Vector3.forward * angle);
+                treeTransform.Rotate(Vector3.forward * angleZ);
             }
             else if(c == 'a'){
-                treeTransform.Rotate(Vector3.forward * -angle);
+                treeTransform.Rotate(Vector3.forward * -angleZ);
             }
         }
     }
@@ -109,9 +110,10 @@ public class Turtle{
     {
         length *= changeRatio;
     }
-    public void SetAngle(float newAngle)
+    public void SetAngles(float newAngleX, float newAngleZ)
     {
-        angle = newAngle;
+        angleX = newAngleX;
+        angleZ = newAngleZ;
     }
     public void SetAlphabet(string newAlphabet)
     {
