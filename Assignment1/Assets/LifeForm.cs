@@ -7,7 +7,7 @@ public class LifeForm : MonoBehaviour {
     Rule[] ruleset;
     LSystem lsystem;
     Turtle turtle;
-    List<Branch> branches;
+    List<Segment> branches;
 
     public float length = 5.0f;
     public float angle = 22.5f;
@@ -17,6 +17,8 @@ public class LifeForm : MonoBehaviour {
     public string[] ruleStrings;
 
 	void Start () {
+        // Look up so we rotate the tree structure
+        transform.LookAt(transform.up);
         if (ruleChars != null)
         {
             ruleset = new Rule[ruleChars.Length];
@@ -56,7 +58,7 @@ public class LifeForm : MonoBehaviour {
     {
         if (branches != null)
         {
-            foreach (Branch b in branches)
+            foreach (Segment b in branches)
             {
                 Gizmos.color = Color.white;
                 Gizmos.DrawLine(b.GetStart(), b.GetEnd());

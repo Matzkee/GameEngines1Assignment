@@ -24,7 +24,7 @@ public class Turtle{
     float angle;
     string alphabetToDraw;
 
-    List<Branch> branches;
+    List<Segment> branches;
     Stack<Coord> coordStack;
 
     GameObject currentTree;
@@ -34,7 +34,7 @@ public class Turtle{
     {
         currentTree = _currentTree;
         treeTransform = currentTree.transform;
-        branches = new List<Branch>();
+        branches = new List<Segment>();
         coordStack = new Stack<Coord>();
 
         alphabetToDraw = a;
@@ -46,7 +46,7 @@ public class Turtle{
     {
         Vector3 currentPosition;
         // Make a new branches list
-        branches = new List<Branch>();
+        branches = new List<Segment>();
 
         // Follow the action depending on current character in alphabet
         for (int i = 0; i < alphabetToDraw.Length; i++)
@@ -55,16 +55,16 @@ public class Turtle{
             if (c == 'F')
             {
                 currentPosition = treeTransform.position;
-                treeTransform.Translate(Vector3.up * length);
-                branches.Add(new Branch(currentPosition, treeTransform.position));
+                treeTransform.Translate(Vector3.forward * length);
+                branches.Add(new Segment(currentPosition, treeTransform.position));
             }
             else if (c == '+')
             {
-                treeTransform.Rotate(Vector3.forward * angle);
+                treeTransform.Rotate(Vector3.right * angle);
             }
             else if (c == '-')
             {
-                treeTransform.Rotate(Vector3.forward * -angle);
+                treeTransform.Rotate(Vector3.right * -angle);
             }
             else if (c == '[')
             {
@@ -76,6 +76,15 @@ public class Turtle{
                 Coord lastCord = coordStack.Pop();
                 treeTransform.position = lastCord.branchPos;
                 treeTransform.rotation = lastCord.branchRot;
+            }
+
+            //Experimental
+            else if (c == 'z')
+            {
+                treeTransform.Rotate(Vector3.forward * angle);
+            }
+            else if(c == 'a'){
+                treeTransform.Rotate(Vector3.forward * -angle);
             }
         }
     }
@@ -108,7 +117,7 @@ public class Turtle{
     {
         alphabetToDraw = newAlphabet;
     }
-    public List<Branch> GetBranches()
+    public List<Segment> GetBranches()
     {
         return branches;
     }

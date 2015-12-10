@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TreeMaker : MonoBehaviour {
 
-	List<Branch> branches = new List<Branch> ();
+	List<Segment> branches = new List<Segment> ();
 
 	public float branchLength = 7;
 	public float branchAngle = 20;
@@ -14,7 +14,7 @@ public class TreeMaker : MonoBehaviour {
 	void Start () {
 		currentPos = transform.position;
         transform.Translate(Vector3.up * branchLength);
-        Branch trunk = new Branch (currentPos, transform.position);
+        Segment trunk = new Segment (currentPos, transform.position);
 		branches.Add (trunk);
         BranchOut (branchLength);
 	}
@@ -31,7 +31,7 @@ public class TreeMaker : MonoBehaviour {
         //Debug.Log("New branch: "+previous+ " - "+next);
         lastPosition = transform.position;
         transform.Translate(Vector3.up * len);
-        branches.Add(new Branch(lastPosition, transform.position));
+        branches.Add(new Segment(lastPosition, transform.position));
 
         len *= 0.8f;
 
@@ -54,26 +54,9 @@ public class TreeMaker : MonoBehaviour {
 	}
 
 	void OnDrawGizmos(){
-		foreach(Branch b in branches){
+		foreach(Segment b in branches){
 			Gizmos.color = Color.green;
 			Gizmos.DrawLine(b.GetStart(), b.GetEnd());
-		}
-	}
-
-	class Branch{
-		Vector3 start;
-		Vector3 end;
-
-		public Branch(Vector3 _start, Vector3 _end){
-			start = _start;
-			end = _end;
-		}
-
-		public Vector3 GetStart(){
-			return start;
-		}
-		public Vector3 GetEnd(){
-			return end;
 		}
 	}
 }
