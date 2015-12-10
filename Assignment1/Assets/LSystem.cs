@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using System.Text;
 
-public class LSystem : MonoBehaviour {
+public class LSystem{
 
     Rule[] rules;
-    string axiom;
     string alphabet;
     int generation;
 
     // Constructor
     public LSystem(string _axiom, Rule[] ruleset)
     {
-        axiom = _axiom;
         rules = ruleset;
         generation = 0;
 
-        alphabet = axiom;
+        alphabet = _axiom;
     }
     public string GetAlphabet()
     {
@@ -58,6 +56,6 @@ public class LSystem : MonoBehaviour {
         alphabet = next.ToString();
         generation++;
 
-
+        Debug.Log("Current Generation: "+generation+" alphabet: "+alphabet);
     }
 }

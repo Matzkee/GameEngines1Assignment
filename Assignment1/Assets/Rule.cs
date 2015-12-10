@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public class Rule : MonoBehaviour {
+﻿public class Rule{
 
     char a;
     string b;
