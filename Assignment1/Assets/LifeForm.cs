@@ -11,7 +11,7 @@ public class LifeForm : MonoBehaviour {
 
     public float length = 5.0f;
     public float angleX = 22.5f;
-    public float angleZ = 30.0f;
+    public float angleY = 30.0f;
     public float lengthRatio = 0.7f;
     public string axiom;
     public char[] ruleChars;
@@ -30,7 +30,7 @@ public class LifeForm : MonoBehaviour {
         }
         lsystem = new LSystem(axiom,ruleset);
 
-        turtle = new Turtle(lsystem.GetAlphabet(), length, angleX, angleZ, gameObject);
+        turtle = new Turtle(lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
     }
 	
 	

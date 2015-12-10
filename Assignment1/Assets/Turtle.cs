@@ -21,7 +21,7 @@ using System.Collections.Generic;
 public class Turtle{
 
     float length;
-    float angleX, angleZ;
+    float angleX, angleY;
     string alphabetToDraw;
 
     List<Segment> branches;
@@ -40,7 +40,7 @@ public class Turtle{
         alphabetToDraw = a;
         length = _length;
         angleX = _angleX;
-        angleZ = _angleZ;
+        angleY = _angleZ;
     }
 
     public void DrawPlant()
@@ -59,6 +59,7 @@ public class Turtle{
                 treeTransform.Translate(Vector3.forward * length);
                 branches.Add(new Segment(currentPosition, treeTransform.position));
             }
+            // Rotate along X axis
             else if (c == '+')
             {
                 treeTransform.Rotate(Vector3.right * angleX);
@@ -80,13 +81,13 @@ public class Turtle{
                 treeTransform.rotation = lastCord.branchRot;
             }
 
-            //Experimental
+            //Rotate along Y axis
             else if (c == 'z')
             {
-                treeTransform.Rotate(Vector3.forward * angleZ);
+                treeTransform.Rotate(Vector3.up * angleY);
             }
             else if(c == 'a'){
-                treeTransform.Rotate(Vector3.forward * -angleZ);
+                treeTransform.Rotate(Vector3.up * -angleY);
             }
         }
     }
@@ -114,7 +115,7 @@ public class Turtle{
     public void SetAngles(float newAngleX, float newAngleZ)
     {
         angleX = newAngleX;
-        angleZ = newAngleZ;
+        angleY = newAngleZ;
     }
     public void SetAlphabet(string newAlphabet)
     {
