@@ -36,6 +36,37 @@ public class CustomCyllinder : MonoBehaviour {
         return newPoints;
     }
 
+    void GenerateMesh(Circle _c1, Circle _c2)
+    {
+        int numOfPoints = _c1.circlePoints.Count;
+        // 3 Vertices per triangle, 2 triangles
+        int verticesPerCell = 6;
+        int vertexCount = (verticesPerCell * 2 * numOfPoints);
+
+        // Alocate new arrays
+        Vector3[] vertices = new Vector3[vertexCount];
+        int[] traingles = new int[vertexCount];
+        Vector2[] uvs = new Vector2[vertexCount];
+
+        int vertexIndex = 0;
+
+        for (int i = 0; i < numOfPoints; i++)
+        {
+            Vector3 cellBottomLeft = _c1.circlePoints[i];
+            Vector3 cellTopLeft = _c2.circlePoints[i];
+            Vector3 cellTopRight = _c2.circlePoints[i + 1];
+            Vector3 cellBottomRight = _c1.circlePoints[i + 1];
+
+            int startVertex = vertexIndex;
+            vertices[vertexIndex++] = cellBottomLeft;
+            vertices[vertexIndex++] = cellTopLeft;
+            vertices[vertexIndex++] = cellTopRight;
+            vertices[vertexIndex++] = cellBottomLeft;
+            vertices[vertexIndex++] = cellTopRight;
+            vertices[vertexIndex++] = cellBottomRight;
+        }
+    }
+
     void OnDrawGizmos()
     {
         if (circles != null)
