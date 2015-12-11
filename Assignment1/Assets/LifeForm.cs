@@ -20,6 +20,8 @@ public class LifeForm : MonoBehaviour {
 	void Start () {
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90);
+        // Rules can be applied in an inspector, once game is started all information is
+        // taken from an editor
         if (ruleChars != null)
         {
             ruleset = new Rule[ruleChars.Length];
@@ -35,6 +37,7 @@ public class LifeForm : MonoBehaviour {
 	
 	
 	void Update () {
+        // For now set the generations to be applied each time clicked
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 currentP = transform.position;
@@ -55,6 +58,7 @@ public class LifeForm : MonoBehaviour {
     {
         branches = turtle.GetBranches();
     }
+    // Draw life form segments
     void OnDrawGizmos()
     {
         if (branches != null)

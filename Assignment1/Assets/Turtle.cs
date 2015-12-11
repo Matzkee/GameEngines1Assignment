@@ -101,7 +101,8 @@ public class Turtle{
         }
     }
 
-
+    // This class is used to store transform properties
+    // ToDo: Change this class and use transform list instead?
     public class Coord
     {
         public Vector3 branchPos;
@@ -113,6 +114,8 @@ public class Turtle{
             branchRot = _branchRot;
         }
     }
+
+    // Getters & Setters
     public void SetLength(float newLength)
     {
         length = newLength;
