@@ -23,19 +23,16 @@ public class CustomCyllinder : MonoBehaviour {
 
     List<Vector3> CreateCircleAt(Transform _centre, float _radius, int _numpoints)
     {
-        Debug.Log("Current Position: "+_centre.position);
-        Vector3 above = (_centre.position * _centre.up * _radius);
-        Debug.Log("Point Above Me: "+ above);
         List<Vector3> newPoints = new List<Vector3>();
         float theta = Mathf.PI * 2.0f / _numpoints;
-        Quaternion temp = _centre.rotation;
+        Quaternion prevRot = _centre.rotation;
         for (int i = 0; i < _numpoints; i++)
         {
             _centre.Rotate(Vector3.forward * (theta * Mathf.Rad2Deg));
-            Vector3 newPoint = (_centre.up * _radius);
+            Vector3 newPoint = (_centre.position + (_centre.up * _radius));
             newPoints.Add(newPoint);
         }
-        _centre.rotation = temp;
+        _centre.rotation = prevRot;
         return newPoints;
     }
 
