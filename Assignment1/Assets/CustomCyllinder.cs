@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CirclePoints : MonoBehaviour {
+public class CustomCyllinder : MonoBehaviour {
 
     public float radius;
     public float thetaOffset;
@@ -14,6 +14,9 @@ public class CirclePoints : MonoBehaviour {
     void Start()
     {
         circles = new List<Circle>();
+        Circle newCircle = CreateCircleAt(transform, radius, numberOfPoints);
+        circles.Add(newCircle);
+
     }
 
     Circle CreateCircleAt(Transform _centre, float _radius, int _numpoints)
@@ -22,7 +25,7 @@ public class CirclePoints : MonoBehaviour {
         float theta = Mathf.PI * 2.0f / _numpoints;
         for (int i = 0; i < _numpoints; i++)
         {
-            _centre.Rotate(Vector3.forward * theta);
+            _centre.Rotate(Vector3.forward * (theta * Mathf.Rad2Deg));
             Vector3 newPoint = (_centre.up * _radius);
             newPoints.Add(newPoint);
         }
@@ -36,9 +39,12 @@ public class CirclePoints : MonoBehaviour {
         {
             foreach (Circle c in circles)
             {
-                for (int j = 0; j < c.circlePoints.Count; j++)
+                for (int j = 1; j <= c.circlePoints.Count; j++)
                 {
-
+                    Vector3 prev = c.circlePoints[j - 1];
+                    Vector3 next = c.circlePoints[j % c.circlePoints.Count];
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawLine(prev, next);
                 }
             }
         }
