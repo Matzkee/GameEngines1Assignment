@@ -10,15 +10,25 @@ public class CustomCyllinder : MonoBehaviour {
     public float height;
     List<Circle> circles;
 
+    public Material material;
+    Mesh mesh;
+    MeshRenderer meshRenderer;
+
     // Use this for initialization
     void Start()
     {
+        mesh = gameObject.AddComponent<MeshFilter>().mesh;
+        meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        mesh.Clear();
         circles = new List<Circle>();
         Circle newCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(newCircle);
         transform.Translate(Vector3.forward * (radius * 2));
         Circle anotherCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(anotherCircle);
+
+        GenerateMesh(circles[0], circles[1]);
+        meshRenderer.material = material;
     }
 
     List<Vector3> CreateCircleAt(Transform _centre, float _radius, int _numpoints)
@@ -45,12 +55,12 @@ public class CustomCyllinder : MonoBehaviour {
 
         // Alocate new arrays
         Vector3[] vertices = new Vector3[vertexCount];
-        int[] traingles = new int[vertexCount];
+        int[] triangles = new int[vertexCount];
         Vector2[] uvs = new Vector2[vertexCount];
 
         int vertexIndex = 0;
 
-        for (int i = 0; i < numOfPoints; i++)
+        for (int i = 0; i <= numOfPoints - 1; i++)
         {
             Vector3 cellBottomLeft = _c1.circlePoints[i];
             Vector3 cellTopLeft = _c2.circlePoints[i];
@@ -64,7 +74,25 @@ public class CustomCyllinder : MonoBehaviour {
             vertices[vertexIndex++] = cellBottomLeft;
             vertices[vertexIndex++] = cellTopRight;
             vertices[vertexIndex++] = cellBottomRight;
+
+            // Make triangles
+            for (int j = 0; j < verticesPerCell; j++)
+            {
+                triangles[startVertex + j] = startVertex + j;
+            }
         }
+
+        for (int i = 0; i < uvs.Length; i++)
+        {
+            uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+        }
+
+        // Assign values to the mesh
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+
     }
 
     void OnDrawGizmos()
