@@ -12,12 +12,14 @@ using System.Collections.Generic;
 
         Now Lets create our alphabet
         F: translate + add branch to the list
-        G: 
-        +: rotate(angle)
-        -: rotate(-angle)
-        [: save position & rotation
-        ]: restore position & rotation
-    */
+        G: Move Forward
+        +: rotate along X axis(angle)
+        -: rotate along X axis(-angle)
+        z: rotate along Y axis(angle)
+        a: rotate along Y axis(-angle)
+        [: push position & rotation to a stack
+        ]: pop position & rotation from the stack
+*/
 public class Turtle{
 
     float length;

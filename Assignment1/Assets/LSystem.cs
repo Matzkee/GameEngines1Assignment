@@ -15,14 +15,6 @@ public class LSystem{
 
         alphabet = _axiom;
     }
-    public string GetAlphabet()
-    {
-        return alphabet;
-    }
-    public int GetGeneration()
-    {
-        return generation;
-    }
     // Class that generates the alphabet for the Lsystem
     public void Generate()
     {
@@ -38,6 +30,8 @@ public class LSystem{
             toReplace += current;
             // Iterate through the rules and append the toReplace string
             // at the end append the next string buffer
+            //
+            // Future Work: Apply Stochastic rules to randomize generation
             for (int j = 0; j< rules.Length; j++)
             {
                 char a = rules[j].GetA();
@@ -53,6 +47,15 @@ public class LSystem{
         alphabet = next.ToString();
         generation++;
 
-        Debug.Log("Current Generation: "+generation+" alphabet: "+alphabet);
+        Debug.Log("Current Generation: "+generation);
+    }
+    // Getters & Setters
+    public string GetAlphabet()
+    {
+        return alphabet;
+    }
+    public int GetGeneration()
+    {
+        return generation;
     }
 }
