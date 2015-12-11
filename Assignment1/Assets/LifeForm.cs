@@ -19,7 +19,7 @@ public class LifeForm : MonoBehaviour {
 
 	void Start () {
         // Look up so we rotate the tree structure
-        transform.LookAt(transform.up);
+        transform.Rotate(Vector3.right * -90);
         if (ruleChars != null)
         {
             ruleset = new Rule[ruleChars.Length];

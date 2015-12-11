@@ -19,6 +19,15 @@ using System.Collections.Generic;
         a: rotate along Y axis(-angle)
         [: push position & rotation to a stack
         ]: pop position & rotation from the stack
+
+    We have 3 classes which perform an L-System:
+        Rule.cs
+        LSystem.cs
+        Turtle.cs
+    Rule is used to specify one or more rules to an L-System lifeform
+    LSystem performs string appending with specified rules
+    Turtle uses the specified commands and applies them to each letter found in previously
+    appended string from L-System
 */
 public class Turtle{
 
@@ -28,14 +37,12 @@ public class Turtle{
 
     List<Segment> branches;
     Stack<Coord> coordStack;
-
-    GameObject currentTree;
+    // We need position information from the attached gameObject
     Transform treeTransform;
 
     public Turtle(string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
     {
-        currentTree = _currentTree;
-        treeTransform = currentTree.transform;
+        treeTransform = _currentTree.transform;
         branches = new List<Segment>();
         coordStack = new Stack<Coord>();
 
