@@ -24,7 +24,7 @@ public class CustomCyllinder : MonoBehaviour {
     List<Vector3> CreateCircleAt(Transform _centre, float _radius, int _numpoints)
     {
         Debug.Log("Current Position: "+_centre.position);
-        Vector3 above = (_centre.up * _radius);
+        Vector3 above = (_centre.position * _centre.up * _radius);
         Debug.Log("Point Above Me: "+ above);
         List<Vector3> newPoints = new List<Vector3>();
         float theta = Mathf.PI * 2.0f / _numpoints;
