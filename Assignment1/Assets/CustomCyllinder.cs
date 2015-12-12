@@ -60,12 +60,12 @@ public class CustomCyllinder : MonoBehaviour {
 
         int vertexIndex = 0;
 
-        for (int i = 0; i <= numOfPoints - 1; i++)
+        for (int i = 0; i < numOfPoints; i++)
         {
             Vector3 cellBottomLeft = _c1.circlePoints[i];
             Vector3 cellTopLeft = _c2.circlePoints[i];
-            Vector3 cellTopRight = _c2.circlePoints[i + 1];
-            Vector3 cellBottomRight = _c1.circlePoints[i + 1];
+            Vector3 cellTopRight = _c2.circlePoints[(i + 1)%numOfPoints];
+            Vector3 cellBottomRight = _c1.circlePoints[(i + 1)%numOfPoints];
 
             int startVertex = vertexIndex;
             vertices[vertexIndex++] = cellBottomLeft;
