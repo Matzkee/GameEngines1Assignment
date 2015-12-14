@@ -26,6 +26,7 @@ public class CustomCyllinder : MonoBehaviour {
         transform.Translate(Vector3.forward * (radius * 2));
         Circle anotherCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(anotherCircle);
+        transform.Translate(Vector3.back * (radius * 2));
 
         GenerateMesh(circles[0], circles[1]);
         meshRenderer.material = material;
@@ -68,12 +69,12 @@ public class CustomCyllinder : MonoBehaviour {
             Vector3 cellBottomRight = _c1.circlePoints[(i + 1)%numOfPoints];
 
             int startVertex = vertexIndex;
-            vertices[vertexIndex++] = cellBottomLeft;
             vertices[vertexIndex++] = cellTopLeft;
-            vertices[vertexIndex++] = cellTopRight;
             vertices[vertexIndex++] = cellBottomLeft;
-            vertices[vertexIndex++] = cellTopRight;
             vertices[vertexIndex++] = cellBottomRight;
+            vertices[vertexIndex++] = cellTopLeft;
+            vertices[vertexIndex++] = cellBottomRight;
+            vertices[vertexIndex++] = cellTopRight;
 
             // Make triangles
             for (int j = 0; j < verticesPerCell; j++)
@@ -84,7 +85,7 @@ public class CustomCyllinder : MonoBehaviour {
 
         for (int i = 0; i < uvs.Length; i++)
         {
-            uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+            uvs[i] = new Vector2(vertices[i].z, vertices[i].x);
         }
 
         // Assign values to the mesh
