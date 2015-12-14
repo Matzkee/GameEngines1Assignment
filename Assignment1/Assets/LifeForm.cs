@@ -10,6 +10,8 @@ public class LifeForm : MonoBehaviour {
     List<Segment> branches;
     List<Circle> circles;
 
+    List<GameObject> treeBranches;
+
     public float length = 5.0f;
     public float angleX = 22.5f;
     public float angleY = 30.0f;
@@ -22,8 +24,10 @@ public class LifeForm : MonoBehaviour {
     public string[] ruleStrings;
     public bool debugLines = false;
     public bool debugCircles = false;
+    public Material treeBark;
 
 	void Start () {
+        treeBranches = new List<GameObject>();
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90);
         // Rules can be applied in an inspector, once game is started all information is
@@ -58,6 +62,26 @@ public class LifeForm : MonoBehaviour {
             GetTreeBranches();
             transform.position = currentP;
             transform.rotation = currentR;
+
+            DestroyTree();
+            RenderTree();
+        }
+    }
+
+    void DestroyTree()
+    {
+        foreach (GameObject g in treeBranches)
+        {
+            Destroy(g);
+        }
+    }
+
+    void RenderTree()
+    {
+        Debug.Log("Number of rendered fragments: "+treeBranches.Count);
+        foreach (Segment e in branches)
+        {
+            MakeBranch(e);
         }
     }
 
@@ -68,6 +92,70 @@ public class LifeForm : MonoBehaviour {
 
         Debug.Log("Number of Segments: "+branches.Count+" Number of Circle Points: "+circles.Count * treeRoundness);
     }
+
+    void MakeBranch(Segment s)
+    {
+        GameObject branch = new GameObject();
+        Mesh mesh;
+        MeshRenderer meshRenderer;
+
+        mesh = branch.AddComponent<MeshFilter>().mesh;
+        meshRenderer = branch.AddComponent<MeshRenderer>();
+        mesh.Clear();
+
+        //branch.transform.position = s.start;
+        //branch.transform.rotation = s.orientation;
+
+        int numOfPoints = s.startCircle.circlePoints.Count;
+        // 3 Vertices per triangle, 2 triangles
+        int verticesPerCell = 6;
+        int vertexCount = (verticesPerCell * 2 * numOfPoints);
+
+        // Alocate new arrays
+        Vector3[] vertices = new Vector3[vertexCount];
+        int[] triangles = new int[vertexCount];
+        Vector2[] uvs = new Vector2[vertexCount];
+
+        int vertexIndex = 0;
+
+        for (int i = 0; i < numOfPoints; i++)
+        {
+            Vector3 cellBottomLeft = s.startCircle.circlePoints[i];
+            Vector3 cellTopLeft = s.endCircle.circlePoints[i];
+            Vector3 cellTopRight = s.endCircle.circlePoints[(i + 1) % numOfPoints];
+            Vector3 cellBottomRight = s.startCircle.circlePoints[(i + 1) % numOfPoints];
+
+            int startVertex = vertexIndex;
+            vertices[vertexIndex++] = cellTopLeft;
+            vertices[vertexIndex++] = cellBottomLeft;
+            vertices[vertexIndex++] = cellBottomRight;
+            vertices[vertexIndex++] = cellTopLeft;
+            vertices[vertexIndex++] = cellBottomRight;
+            vertices[vertexIndex++] = cellTopRight;
+
+            // Make triangles
+            for (int j = 0; j < verticesPerCell; j++)
+            {
+                triangles[startVertex + j] = startVertex + j;
+            }
+        }
+
+        for (int i = 0; i < uvs.Length; i++)
+        {
+            uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+        }
+
+        // Assign values to the mesh
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+        meshRenderer.material = treeBark;
+
+        //Instantiate(branch, s.start, s.orientation);
+        treeBranches.Add(branch);
+    }
+
     // Draw debug lines
     void OnDrawGizmos()
     {

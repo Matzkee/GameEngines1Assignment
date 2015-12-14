@@ -38,6 +38,7 @@ public class Turtle{
     float treeWidth;
 
     List<Segment> branches;
+    List<Circle> circles;
     Stack<Coord> coordStack;
     // We need position information from the attached gameObject
     Transform treeTransform;
@@ -65,15 +66,19 @@ public class Turtle{
     {
 
         Vector3 lastPosition;
+        Quaternion lastRotation;
         Circle lastCircle;
         // Make a new branches list
         branches = new List<Segment>();
+        circles = new List<Circle>();
         int repeats = 0;
 
         alphabetToDraw += "x";
 
         lastPosition = treeTransform.position;
+        lastRotation = treeTransform.rotation;
         lastCircle = CreateCircleAt(treeTransform, treeWidth, treeRoundness);
+        circles.Add(lastCircle);
         // Follow the action depending on current character in alphabet
         for (int i = 0; i < alphabetToDraw.Length; i++)
         {
@@ -90,11 +95,12 @@ public class Turtle{
                 {
                     // Make a new Circle
                     Circle newCircle = CreateCircleAt(treeTransform, treeWidth, treeRoundness);
-
+                    circles.Add(newCircle);
                     // Add a new segment
-                    branches.Add(new Segment(lastPosition, treeTransform.position, lastCircle, newCircle));
+                    branches.Add(new Segment(lastPosition, treeTransform.position, lastCircle, newCircle, lastRotation));
 
                     // Set a new vector for tracking position
+                    lastRotation = treeTransform.rotation;
                     lastPosition = treeTransform.position;
                     lastCircle = newCircle;
                     // Reset the counter
@@ -112,17 +118,21 @@ public class Turtle{
             }
             else if (c == '[')
             {
-                Coord currentCoord = new Coord(treeTransform.position, treeTransform.rotation);
+                Coord currentCoord = new Coord(treeTransform.position, treeTransform.rotation, 
+                    CreateCircleAt(treeTransform, treeWidth, treeRoundness));
                 coordStack.Push(currentCoord);
             }
             else if (c == ']')
             {
+                // Set the last branches colour to green
                 branches[branches.Count - 1].color = Color.green;
                 Coord lastCord = coordStack.Pop();
                 treeTransform.position = lastCord.branchPos;
                 treeTransform.rotation = lastCord.branchRot;
 
+                lastCircle = lastCord.circle;
                 lastPosition = lastCord.branchPos;
+                lastRotation = lastCord.branchRot;
             }
 
             //Rotate along Y axis
@@ -159,11 +169,13 @@ public class Turtle{
     {
         public Vector3 branchPos;
         public Quaternion branchRot;
+        public Circle circle;
 
-        public Coord(Vector3 _branchPos, Quaternion _branchRot)
+        public Coord(Vector3 _branchPos, Quaternion _branchRot, Circle _circle)
         {
             branchPos = _branchPos;
             branchRot = _branchRot;
+            circle = _circle;
         }
     }
 
@@ -192,5 +204,9 @@ public class Turtle{
     public List<Segment> GetBranches()
     {
         return branches;
+    }
+    public List<Circle> GetCircles()
+    {
+        return circles;
     }
 }

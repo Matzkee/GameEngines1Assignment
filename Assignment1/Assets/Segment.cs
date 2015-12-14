@@ -11,15 +11,17 @@ public class Segment
     public Color color;
     public Circle startCircle;
     public Circle endCircle;
+    public Quaternion orientation;
 
     // Constructor
-    public Segment(Vector3 _start, Vector3 _end, Circle _startCircle, Circle _endCircle)
+    public Segment(Vector3 _start, Vector3 _end, Circle _startCircle, Circle _endCircle, Quaternion _orientation)
     {
         start = _start;
         end = _end;
         color = Color.grey;
         startCircle = _startCircle;
         endCircle = _endCircle;
+        orientation = _orientation;
     }
     
 }
