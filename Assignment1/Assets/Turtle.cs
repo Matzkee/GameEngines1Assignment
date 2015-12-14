@@ -45,16 +45,12 @@ public class Turtle{
     Transform treeTransform;
     // Assign a tree bark material
     public Material material;
+    int vertexIndex = 0;
 
-    Mesh mesh;
-    MeshRenderer meshRenderer;
     public Turtle(float radius, int detail, string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
     {
         treeRoundness = detail;
         treeWidth = radius;
-        mesh = _currentTree.AddComponent<MeshFilter>().mesh;
-        meshRenderer = _currentTree.AddComponent<MeshRenderer>();
-        mesh.Clear();
 
         treeTransform = _currentTree.transform;
         circles = new List<Circle>();
@@ -65,6 +61,7 @@ public class Turtle{
         length = _length;
         angleX = _angleX;
         angleY = _angleZ;
+        
     }
 
     public void DrawPlant()
