@@ -64,8 +64,8 @@ public class Turtle{
 
     public void DrawPlant()
     {
-
         Vector3 lastPosition;
+
         Quaternion lastRotation;
         Circle lastCircle;
         // Make a new branches list

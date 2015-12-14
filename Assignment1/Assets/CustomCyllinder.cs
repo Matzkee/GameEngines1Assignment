@@ -14,7 +14,6 @@ public class CustomCyllinder : MonoBehaviour {
     Mesh mesh;
     MeshRenderer meshRenderer;
 
-    // Use this for initialization
     /*
         This class is used to study procedurall mesh generation
         

@@ -10,7 +10,9 @@ public class LifeForm : MonoBehaviour {
     List<Segment> branches;
     List<Circle> circles;
 
+    List<MeshFilter> filters;
     List<GameObject> treeBranches;
+    public Material treeBark;
 
     public float length = 5.0f;
     public float angleX = 22.5f;
@@ -22,14 +24,19 @@ public class LifeForm : MonoBehaviour {
     public string axiom;
     public char[] ruleChars;
     public string[] ruleStrings;
-    public bool debugLines = false;
-    public bool debugCircles = false;
-    public Material treeBark;
+    public bool skeletonLines = false;
+    public bool skeletonCircles = false;
+
+    private int generations = 0;
 
 	void Start () {
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.AddComponent<MeshRenderer>();
         treeBranches = new List<GameObject>();
+
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90);
+
         // Rules can be applied in an inspector, once game is started all information is
         // taken from an editor
         if (ruleChars != null)
@@ -48,8 +55,9 @@ public class LifeForm : MonoBehaviour {
 	
 	void Update () {
         // For now set the generations to be applied each time clicked
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && generations != 5)
         {
+            generations++;
             Vector3 currentP = transform.position;
             Quaternion currentR = transform.rotation;
             lsystem.Generate();
@@ -63,8 +71,22 @@ public class LifeForm : MonoBehaviour {
             transform.position = currentP;
             transform.rotation = currentR;
 
-            DestroyTree();
-            RenderTree();
+            // Check for number of segments
+            // Combining meshes has its limit and I didn't want to display combine errors
+            if (branches.Count < 500)
+            {
+                DestroyTree();
+                RenderTree();
+                CombineMeshes();
+            }
+        }
+
+    }
+    void DisplayMesh(bool display)
+    {
+        foreach (GameObject g in treeBranches)
+        {
+            g.SetActive(display);
         }
     }
 
@@ -78,6 +100,7 @@ public class LifeForm : MonoBehaviour {
 
     void RenderTree()
     {
+        filters = new List<MeshFilter>();
         Debug.Log("Number of rendered fragments: "+treeBranches.Count);
         foreach (Segment e in branches)
         {
@@ -93,18 +116,41 @@ public class LifeForm : MonoBehaviour {
         Debug.Log("Number of Segments: "+branches.Count+" Number of Circle Points: "+circles.Count * treeRoundness);
     }
 
+    void CombineMeshes()
+    {
+        // Method taken from Unity's combine meshes reference page
+        // http://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html
+        // This method combines the meshes previously accumulated in a list
+        CombineInstance[] combine = new CombineInstance[filters.Count];
+        int i = 0;
+        while (i < filters.Count)
+        {
+            combine[i].mesh = filters[i].sharedMesh;
+            combine[i].transform = filters[i].transform.localToWorldMatrix;
+            filters[i].gameObject.SetActive(false);
+            i++;
+        }
+        transform.GetComponent<MeshFilter>().mesh = new Mesh();
+        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+        transform.GetComponent<MeshRenderer>().material = treeBark;
+        transform.gameObject.SetActive(true);
+
+        // destroy the leftover objects
+        DestroyTree();
+    }
+
+    // Make new object for each branch with mesh and material applied
     void MakeBranch(Segment s)
     {
         GameObject branch = new GameObject();
         Mesh mesh;
+        MeshFilter filter;
         MeshRenderer meshRenderer;
 
-        mesh = branch.AddComponent<MeshFilter>().mesh;
+        filter = branch.AddComponent<MeshFilter>();
+        mesh = filter.mesh;
         meshRenderer = branch.AddComponent<MeshRenderer>();
         mesh.Clear();
-
-        //branch.transform.position = s.start;
-        //branch.transform.rotation = s.orientation;
 
         int numOfPoints = s.startCircle.circlePoints.Count;
         // 3 Vertices per triangle, 2 triangles
@@ -152,15 +198,16 @@ public class LifeForm : MonoBehaviour {
         mesh.RecalculateNormals();
         meshRenderer.material = treeBark;
 
-        //Instantiate(branch, s.start, s.orientation);
+        branch.transform.parent = transform;
         treeBranches.Add(branch);
+        filters.Add(filter);
     }
 
     // Draw debug lines
     void OnDrawGizmos()
     {
         
-        if (branches != null && debugLines)
+        if (branches != null && skeletonLines)
         {
             foreach (Segment b in branches)
             {
@@ -169,7 +216,7 @@ public class LifeForm : MonoBehaviour {
             }
         }
         
-        if (circles != null && debugCircles)
+        if (circles != null && skeletonCircles)
         {
             for (int i = 0; i < circles.Count; i++)
             {
