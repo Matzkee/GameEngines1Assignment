@@ -35,7 +35,7 @@ public class Turtle{
     float angleX, angleY;
     string alphabetToDraw;
     int treeRoundness;
-    float startRadius;
+    float treeWidth;
 
     List<Segment> branches;
     // List for storing circles between tree segments
@@ -51,12 +51,13 @@ public class Turtle{
     public Turtle(float radius, int detail, string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
     {
         treeRoundness = detail;
-        startRadius = radius;
+        treeWidth = radius;
         mesh = _currentTree.AddComponent<MeshFilter>().mesh;
         meshRenderer = _currentTree.AddComponent<MeshRenderer>();
         mesh.Clear();
 
         treeTransform = _currentTree.transform;
+        circles = new List<Circle>();
         branches = new List<Segment>();
         coordStack = new Stack<Coord>();
 
@@ -71,6 +72,7 @@ public class Turtle{
         Vector3 currentPosition;
         // Make a new branches list
         branches = new List<Segment>();
+        circles = new List<Circle>();
 
         // Follow the action depending on current character in alphabet
         for (int i = 0; i < alphabetToDraw.Length; i++)
@@ -78,8 +80,10 @@ public class Turtle{
             char c = alphabetToDraw[i];
             if (c == 'F')
             {
+                circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
                 currentPosition = treeTransform.position;
                 treeTransform.Translate(Vector3.forward * length);
+                circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
                 branches.Add(new Segment(currentPosition, treeTransform.position));
             }
             // Rotate along X axis
@@ -115,7 +119,7 @@ public class Turtle{
         }
     }
 
-    Circle CreateCircleAt(Transform _centre, float _radius, int _numpoints)
+    public Circle CreateCircleAt(Transform _centre, float _radius, int _numpoints)
     {
         List<Vector3> newPoints = new List<Vector3>();
         float theta = Mathf.PI * 2.0f / _numpoints;
@@ -146,17 +150,6 @@ public class Turtle{
         }
     }
 
-    // Class for storing x amount of points along a circle
-    class Circle
-    {
-        public List<Vector3> circlePoints;
-
-        public Circle(List<Vector3> _points)
-        {
-            circlePoints = _points;
-        }
-    }
-
     // Getters & Setters
     public void SetLength(float newLength)
     {
@@ -165,6 +158,10 @@ public class Turtle{
     public void ChangeLength(float changeRatio)
     {
         length *= changeRatio;
+    }
+    public void ChangeWidth(float widthRatio)
+    {
+        treeWidth *= widthRatio;
     }
     public void SetAngles(float newAngleX, float newAngleZ)
     {
@@ -178,5 +175,9 @@ public class Turtle{
     public List<Segment> GetBranches()
     {
         return branches;
+    }
+    public List<Circle> GetCircles()
+    {
+        return circles;
     }
 }

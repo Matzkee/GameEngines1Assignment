@@ -8,13 +8,15 @@ public class LifeForm : MonoBehaviour {
     LSystem lsystem;
     Turtle turtle;
     List<Segment> branches;
+    List<Circle> circles;
 
     public float length = 5.0f;
     public float angleX = 22.5f;
     public float angleY = 30.0f;
     public float lengthRatio = 0.7f;
-    public float startRadius;
+    public float startRadius = 1.0f;
     public int treeRoundness = 8;
+    public float widthRatio = 0.7f;
     public string axiom;
     public char[] ruleChars;
     public string[] ruleStrings;
@@ -49,6 +51,7 @@ public class LifeForm : MonoBehaviour {
             turtle.DrawPlant();
 
             turtle.ChangeLength(lengthRatio);
+            turtle.ChangeWidth(0.8f);
 
             GetTreeBranches();
             transform.position = currentP;
@@ -58,17 +61,33 @@ public class LifeForm : MonoBehaviour {
 
     void GetTreeBranches()
     {
-        branches = turtle.GetBranches();
+        //branches = turtle.GetBranches();
+        circles = turtle.GetCircles();
     }
     // Draw life form segments
     void OnDrawGizmos()
     {
+        /*
         if (branches != null)
         {
             foreach (Segment b in branches)
             {
                 Gizmos.color = b.GetColor();
                 Gizmos.DrawLine(b.GetStart(), b.GetEnd());
+            }
+        }*/
+
+        if (circles != null)
+        {
+            for (int i = 0; i < circles.Count; i++)
+            {
+                for (int j = 1; j <= circles[i].circlePoints.Count; j++)
+                {
+                    Vector3 prev = circles[i].circlePoints[j - 1];
+                    Vector3 next = circles[i].circlePoints[j % circles[i].circlePoints.Count];
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawLine(prev, next);
+                }
             }
         }
     }
