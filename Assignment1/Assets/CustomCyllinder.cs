@@ -20,13 +20,20 @@ public class CustomCyllinder : MonoBehaviour {
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
         mesh.Clear();
+
+        Quaternion saveRot = transform.rotation;
+        Vector3 savePos = transform.position;
+
         circles = new List<Circle>();
         Circle newCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(newCircle);
+        transform.Rotate(Vector3.right * 30.0f);
         transform.Translate(Vector3.forward * (radius * 2));
         Circle anotherCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(anotherCircle);
-        transform.Translate(Vector3.back * (radius * 2));
+
+        transform.position = savePos;
+        transform.rotation = saveRot;
 
         GenerateMesh(circles[0], circles[1]);
         meshRenderer.material = material;
@@ -80,12 +87,13 @@ public class CustomCyllinder : MonoBehaviour {
             for (int j = 0; j < verticesPerCell; j++)
             {
                 triangles[startVertex + j] = startVertex + j;
+                uvs[startVertex + j] = new Vector2(i / vertices[startVertex + j].x, i / vertices[startVertex + j].z);
             }
         }
 
         for (int i = 0; i < uvs.Length; i++)
         {
-            uvs[i] = new Vector2(vertices[i].z, vertices[i].x);
+            //uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
         }
 
         // Assign values to the mesh
