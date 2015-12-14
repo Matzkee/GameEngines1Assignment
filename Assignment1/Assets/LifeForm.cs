@@ -13,6 +13,8 @@ public class LifeForm : MonoBehaviour {
     public float angleX = 22.5f;
     public float angleY = 30.0f;
     public float lengthRatio = 0.7f;
+    public float startRadius;
+    public int treeRoundness = 8;
     public string axiom;
     public char[] ruleChars;
     public string[] ruleStrings;
@@ -32,7 +34,7 @@ public class LifeForm : MonoBehaviour {
         }
         lsystem = new LSystem(axiom,ruleset);
 
-        turtle = new Turtle(lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
+        turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
     }
 	
 	

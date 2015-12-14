@@ -34,14 +34,28 @@ public class Turtle{
     float length;
     float angleX, angleY;
     string alphabetToDraw;
+    int treeRoundness;
+    float startRadius;
 
     List<Segment> branches;
+    // List for storing circles between tree segments
+    List<Circle> circles;
     Stack<Coord> coordStack;
     // We need position information from the attached gameObject
     Transform treeTransform;
+    // Assign a tree bark material
+    public Material material;
 
-    public Turtle(string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
+    Mesh mesh;
+    MeshRenderer meshRenderer;
+    public Turtle(float radius, int detail, string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
     {
+        treeRoundness = detail;
+        startRadius = radius;
+        mesh = _currentTree.AddComponent<MeshFilter>().mesh;
+        meshRenderer = _currentTree.AddComponent<MeshRenderer>();
+        mesh.Clear();
+
         treeTransform = _currentTree.transform;
         branches = new List<Segment>();
         coordStack = new Stack<Coord>();
@@ -101,8 +115,25 @@ public class Turtle{
         }
     }
 
+    Circle CreateCircleAt(Transform _centre, float _radius, int _numpoints)
+    {
+        List<Vector3> newPoints = new List<Vector3>();
+        float theta = Mathf.PI * 2.0f / _numpoints;
+        // Save current transform's rotation
+        Quaternion prevRot = _centre.rotation;
+        for (int i = 0; i < _numpoints; i++)
+        {
+            // Rotate the transform by preset theta and get point directly above it
+            _centre.Rotate(Vector3.forward * (theta * Mathf.Rad2Deg));
+            Vector3 newPoint = (_centre.position + (_centre.up * _radius));
+            newPoints.Add(newPoint);
+        }
+        // Restore the transform to previous rotation
+        _centre.rotation = prevRot;
+        return new Circle(newPoints);
+    }
+
     // This class is used to store transform properties
-    // ToDo: Change this class and use transform list instead?
     public class Coord
     {
         public Vector3 branchPos;
@@ -112,6 +143,17 @@ public class Turtle{
         {
             branchPos = _branchPos;
             branchRot = _branchRot;
+        }
+    }
+
+    // Class for storing x amount of points along a circle
+    class Circle
+    {
+        public List<Vector3> circlePoints;
+
+        public Circle(List<Vector3> _points)
+        {
+            circlePoints = _points;
         }
     }
 

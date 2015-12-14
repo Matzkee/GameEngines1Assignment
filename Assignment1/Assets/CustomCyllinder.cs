@@ -15,15 +15,21 @@ public class CustomCyllinder : MonoBehaviour {
     MeshRenderer meshRenderer;
 
     // Use this for initialization
+    /*
+        This class is used to study procedurall mesh generation
+        
+        Please Ignore
+    */
     void Start()
     {
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
         mesh.Clear();
-
+        // Save current transform position & rotation
         Quaternion saveRot = transform.rotation;
         Vector3 savePos = transform.position;
 
+        // Create 2 circles by moving the transform
         circles = new List<Circle>();
         Circle newCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(newCircle);
@@ -32,9 +38,11 @@ public class CustomCyllinder : MonoBehaviour {
         Circle anotherCircle = new Circle(CreateCircleAt(transform, radius, numberOfPoints));
         circles.Add(anotherCircle);
 
+        // Restore transforms position and rotation
         transform.position = savePos;
         transform.rotation = saveRot;
 
+        // Create the mesh and set a premade material
         GenerateMesh(circles[0], circles[1]);
         meshRenderer.material = material;
     }
@@ -43,13 +51,16 @@ public class CustomCyllinder : MonoBehaviour {
     {
         List<Vector3> newPoints = new List<Vector3>();
         float theta = Mathf.PI * 2.0f / _numpoints;
+        // Save current transform's rotation
         Quaternion prevRot = _centre.rotation;
         for (int i = 0; i < _numpoints; i++)
         {
+            // Rotate the transform by preset theta and get point directly above it
             _centre.Rotate(Vector3.forward * (theta * Mathf.Rad2Deg));
             Vector3 newPoint = (_centre.position + (_centre.up * _radius));
             newPoints.Add(newPoint);
         }
+        // Return the transform to previous rotation
         _centre.rotation = prevRot;
         return newPoints;
     }
@@ -120,7 +131,9 @@ public class CustomCyllinder : MonoBehaviour {
             }
         }
     }
-
+    /*
+        Class for storing x amount of points along a circle
+    */
     class Circle
     {
         public List<Vector3> circlePoints;
