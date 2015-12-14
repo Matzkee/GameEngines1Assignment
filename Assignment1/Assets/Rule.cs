@@ -3,23 +3,13 @@
 */
 public class Rule{
 
-    char a;
-    string b;
+    public char a;
+    public string b;
 
     // Constructor
     public Rule(char _a, string _b)
     {
         a = _a;
         b = _b;
-    }
-
-    // Getters & Setters
-    public char GetA()
-    {
-        return a;
-    }
-    public string GetB()
-    {
-        return b;
     }
 }

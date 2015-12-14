@@ -6,35 +6,20 @@
     */
 public class Segment
 {
-    Vector3 start;
-    Vector3 end;
-    Color color;
+    public Vector3 start;
+    public Vector3 end;
+    public Color color;
+    public Circle startCircle;
+    public Circle endCircle;
 
     // Constructor
-    public Segment(Vector3 _start, Vector3 _end)
+    public Segment(Vector3 _start, Vector3 _end, Circle _startCircle, Circle _endCircle)
     {
         start = _start;
         end = _end;
         color = Color.grey;
-    }
-
-    // Getters & Setters
-    public void SetColor(Color c)
-    {
-        color = c;
-    }
-    public Color GetColor()
-    {
-        return color;
-    }
-
-    public Vector3 GetStart()
-    {
-        return start;
-    }
-    public Vector3 GetEnd()
-    {
-        return end;
+        startCircle = _startCircle;
+        endCircle = _endCircle;
     }
     
 }

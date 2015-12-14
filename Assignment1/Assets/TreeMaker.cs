@@ -56,7 +56,7 @@ public class TreeMaker : MonoBehaviour {
 	void OnDrawGizmos(){
 		foreach(Segment b in branches){
 			Gizmos.color = Color.green;
-			Gizmos.DrawLine(b.GetStart(), b.GetEnd());
+			Gizmos.DrawLine(b.start, b.end);
 		}
 	}
 }

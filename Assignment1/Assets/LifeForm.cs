@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LifeForm : MonoBehaviour {
-
+    
     Rule[] ruleset;
     LSystem lsystem;
     Turtle turtle;
@@ -68,7 +68,7 @@ public class LifeForm : MonoBehaviour {
 
         Debug.Log("Number of Segments: "+branches.Count+" Number of Circle Points: "+circles.Count * treeRoundness);
     }
-    // Draw life form segments
+    // Draw debug lines
     void OnDrawGizmos()
     {
         
@@ -76,8 +76,8 @@ public class LifeForm : MonoBehaviour {
         {
             foreach (Segment b in branches)
             {
-                Gizmos.color = b.GetColor();
-                Gizmos.DrawLine(b.GetStart(), b.GetEnd());
+                Gizmos.color = b.color;
+                Gizmos.DrawLine(b.start, b.end);
             }
         }
         

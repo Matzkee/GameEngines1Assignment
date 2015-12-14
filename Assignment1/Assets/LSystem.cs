@@ -34,10 +34,10 @@ public class LSystem{
             // Future Work: Apply Stochastic rules to randomize generation
             for (int j = 0; j< rules.Length; j++)
             {
-                char a = rules[j].GetA();
+                char a = rules[j].a;
                 if (a == current)
                 {
-                    toReplace = rules[j].GetB();
+                    toReplace = rules[j].b;
                     break;
                 }
             }

@@ -38,8 +38,6 @@ public class Turtle{
     float treeWidth;
 
     List<Segment> branches;
-    // List for storing circles between tree segments
-    List<Circle> circles;
     Stack<Coord> coordStack;
     // We need position information from the attached gameObject
     Transform treeTransform;
@@ -53,7 +51,6 @@ public class Turtle{
         treeWidth = _radius;
 
         treeTransform = _currentTree.transform;
-        circles = new List<Circle>();
         branches = new List<Segment>();
         coordStack = new Stack<Coord>();
 
@@ -68,15 +65,15 @@ public class Turtle{
     {
 
         Vector3 lastPosition;
+        Circle lastCircle;
         // Make a new branches list
         branches = new List<Segment>();
-        circles = new List<Circle>();
         int repeats = 0;
 
         alphabetToDraw += "x";
 
         lastPosition = treeTransform.position;
-        circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
+        lastCircle = CreateCircleAt(treeTransform, treeWidth, treeRoundness);
         // Follow the action depending on current character in alphabet
         for (int i = 0; i < alphabetToDraw.Length; i++)
         {
@@ -91,15 +88,15 @@ public class Turtle{
                 }
                 else
                 {
-                    // Add a new set of circle points
-                    circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
+                    // Make a new Circle
+                    Circle newCircle = CreateCircleAt(treeTransform, treeWidth, treeRoundness);
 
                     // Add a new segment
-                    branches.Add(new Segment(lastPosition, treeTransform.position));
+                    branches.Add(new Segment(lastPosition, treeTransform.position, lastCircle, newCircle));
 
                     // Set a new vector for tracking position
                     lastPosition = treeTransform.position;
-
+                    lastCircle = newCircle;
                     // Reset the counter
                     repeats = 0;
                 }
@@ -120,7 +117,7 @@ public class Turtle{
             }
             else if (c == ']')
             {
-                branches[branches.Count - 1].SetColor(Color.green);
+                branches[branches.Count - 1].color = Color.green;
                 Coord lastCord = coordStack.Pop();
                 treeTransform.position = lastCord.branchPos;
                 treeTransform.rotation = lastCord.branchRot;
@@ -195,9 +192,5 @@ public class Turtle{
     public List<Segment> GetBranches()
     {
         return branches;
-    }
-    public List<Circle> GetCircles()
-    {
-        return circles;
     }
 }
