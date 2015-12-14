@@ -47,10 +47,15 @@ public class Turtle{
     public Material material;
     int vertexIndex = 0;
 
-    public Turtle(float radius, int detail, string a, float _length, float _angleX, float _angleZ, GameObject _currentTree)
+    GameObject trunk;
+    List<GameObject> treeTrunk;
+
+    public Turtle(float _radius, int _detail, string a, float _length, float _angleX, float _angleZ, 
+        GameObject _currentTree, GameObject _trunk)
     {
-        treeRoundness = detail;
-        treeWidth = radius;
+        trunk = _trunk;
+        treeRoundness = _detail;
+        treeWidth = _radius;
 
         treeTransform = _currentTree.transform;
         circles = new List<Circle>();
@@ -82,6 +87,7 @@ public class Turtle{
                 treeTransform.Translate(Vector3.forward * length);
                 circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
                 branches.Add(new Segment(currentPosition, treeTransform.position));
+                Object.Instantiate(trunk, treeTransform.position, treeTransform.rotation);
             }
             // Rotate along X axis
             else if (c == '+')

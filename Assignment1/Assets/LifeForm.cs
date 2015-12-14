@@ -10,6 +10,8 @@ public class LifeForm : MonoBehaviour {
     List<Segment> branches;
     List<Circle> circles;
 
+    public GameObject treeBark;
+
     public float length = 5.0f;
     public float angleX = 22.5f;
     public float angleY = 30.0f;
@@ -36,7 +38,7 @@ public class LifeForm : MonoBehaviour {
         }
         lsystem = new LSystem(axiom,ruleset);
 
-        turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
+        turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject, treeBark);
     }
 	
 	
@@ -61,7 +63,7 @@ public class LifeForm : MonoBehaviour {
 
     void GetTreeBranches()
     {
-        //branches = turtle.GetBranches();
+        branches = turtle.GetBranches();
         circles = turtle.GetCircles();
     }
     // Draw life form segments
@@ -76,7 +78,7 @@ public class LifeForm : MonoBehaviour {
                 Gizmos.DrawLine(b.GetStart(), b.GetEnd());
             }
         }*/
-
+        /*
         if (circles != null)
         {
             for (int i = 0; i < circles.Count; i++)
@@ -89,6 +91,6 @@ public class LifeForm : MonoBehaviour {
                     Gizmos.DrawLine(prev, next);
                 }
             }
-        }
+        }*/
     }
 }
