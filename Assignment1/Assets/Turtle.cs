@@ -45,15 +45,10 @@ public class Turtle{
     Transform treeTransform;
     // Assign a tree bark material
     public Material material;
-    int vertexIndex = 0;
-
-    GameObject trunk;
-    List<GameObject> treeTrunk;
 
     public Turtle(float _radius, int _detail, string a, float _length, float _angleX, float _angleZ, 
-        GameObject _currentTree, GameObject _trunk)
+        GameObject _currentTree)
     {
-        trunk = _trunk;
         treeRoundness = _detail;
         treeWidth = _radius;
 
@@ -71,23 +66,43 @@ public class Turtle{
 
     public void DrawPlant()
     {
-        Vector3 currentPosition;
+
+        Vector3 lastPosition;
         // Make a new branches list
         branches = new List<Segment>();
         circles = new List<Circle>();
+        int repeats = 0;
 
+        alphabetToDraw += "x";
+
+        lastPosition = treeTransform.position;
+        circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
         // Follow the action depending on current character in alphabet
         for (int i = 0; i < alphabetToDraw.Length; i++)
         {
             char c = alphabetToDraw[i];
             if (c == 'F')
             {
-                circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
-                currentPosition = treeTransform.position;
                 treeTransform.Translate(Vector3.forward * length);
-                circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
-                branches.Add(new Segment(currentPosition, treeTransform.position));
-                Object.Instantiate(trunk, treeTransform.position, treeTransform.rotation);
+                if (alphabetToDraw[i + 1].Equals('F'))
+                {
+                    // Keep going until another character is found
+                    repeats++;
+                }
+                else
+                {
+                    // Add a new set of circle points
+                    circles.Add(CreateCircleAt(treeTransform, treeWidth, treeRoundness));
+
+                    // Add a new segment
+                    branches.Add(new Segment(lastPosition, treeTransform.position));
+
+                    // Set a new vector for tracking position
+                    lastPosition = treeTransform.position;
+
+                    // Reset the counter
+                    repeats = 0;
+                }
             }
             // Rotate along X axis
             else if (c == '+')
@@ -109,6 +124,8 @@ public class Turtle{
                 Coord lastCord = coordStack.Pop();
                 treeTransform.position = lastCord.branchPos;
                 treeTransform.rotation = lastCord.branchRot;
+
+                lastPosition = lastCord.branchPos;
             }
 
             //Rotate along Y axis

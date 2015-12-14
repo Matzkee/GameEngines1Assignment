@@ -10,8 +10,6 @@ public class LifeForm : MonoBehaviour {
     List<Segment> branches;
     List<Circle> circles;
 
-    public GameObject treeBark;
-
     public float length = 5.0f;
     public float angleX = 22.5f;
     public float angleY = 30.0f;
@@ -22,6 +20,8 @@ public class LifeForm : MonoBehaviour {
     public string axiom;
     public char[] ruleChars;
     public string[] ruleStrings;
+    public bool debugLines = false;
+    public bool debugCircles = false;
 
 	void Start () {
         // Look up so we rotate the tree structure
@@ -38,7 +38,7 @@ public class LifeForm : MonoBehaviour {
         }
         lsystem = new LSystem(axiom,ruleset);
 
-        turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject, treeBark);
+        turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
     }
 	
 	
@@ -65,21 +65,23 @@ public class LifeForm : MonoBehaviour {
     {
         branches = turtle.GetBranches();
         circles = turtle.GetCircles();
+
+        Debug.Log("Number of Segments: "+branches.Count+" Number of Circle Points: "+circles.Count * treeRoundness);
     }
     // Draw life form segments
     void OnDrawGizmos()
     {
-        /*
-        if (branches != null)
+        
+        if (branches != null && debugLines)
         {
             foreach (Segment b in branches)
             {
                 Gizmos.color = b.GetColor();
                 Gizmos.DrawLine(b.GetStart(), b.GetEnd());
             }
-        }*/
-        /*
-        if (circles != null)
+        }
+        
+        if (circles != null && debugCircles)
         {
             for (int i = 0; i < circles.Count; i++)
             {
@@ -91,6 +93,6 @@ public class LifeForm : MonoBehaviour {
                     Gizmos.DrawLine(prev, next);
                 }
             }
-        }*/
+        }
     }
 }
