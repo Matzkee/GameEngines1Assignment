@@ -8,7 +8,7 @@ public class FPSController : MonoBehaviour {
 	Vector3 position;
 	Vector3 look;
     Vector3 right;
-    Vector3 up;
+    //Vector3 up;
     Quaternion orientation;
     public float speed = 100.0f;
     float mouseX, mouseY;
@@ -44,7 +44,7 @@ public class FPSController : MonoBehaviour {
 		orientation = gameObject.transform.rotation;
 		look = gameObject.transform.forward;
 		right = gameObject.transform.right;
-        up = gameObject.transform.up;
+        //up = gameObject.transform.up;
 	}
 
 	void UpdateGameObject()
@@ -98,8 +98,8 @@ public class FPSController : MonoBehaviour {
         mouseX = Input.GetAxis("Mouse X");
         mouseY = Input.GetAxis("Mouse Y");
 
-		float invcosTheta1 = Vector3.Dot(look, Vector3.up);
-		float angle = Mathf.Acos (invcosTheta1);
+		//float invcosTheta1 = Vector3.Dot(look, Vector3.up);
+		//float angle = Mathf.Acos (invcosTheta1);
 
 		Yaw(mouseX);
 		Pitch(-mouseY);

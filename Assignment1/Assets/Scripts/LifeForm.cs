@@ -27,14 +27,14 @@ public class LifeForm : MonoBehaviour {
     public bool skeletonLines = false;
     public bool skeletonCircles = false;
 
-    private int generations = 0;
+    public int generations = 0;
     private bool rotated = false;
 
 	void Start () {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         treeBranches = new List<GameObject>();
-
+        
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90.0f);
         // Rules can be applied in an inspector, once game is started all information is
@@ -50,64 +50,42 @@ public class LifeForm : MonoBehaviour {
         lsystem = new LSystem(axiom,ruleset);
 
         turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
-    }
-	
-	
-	void Update () {
-        // For now set the generations to be applied each time clicked
-        if (Input.GetMouseButtonDown(0) && generations < 6)
+
+        // Draw the tree
+        for (int i = 0; i < generations; i++)
         {
             if (rotated)
             {
                 transform.Rotate(Vector3.right * -90.0f);
                 rotated = false;
             }
-            generations++;
             Vector3 currentP = transform.position;
             Quaternion currentR = transform.rotation;
+
+            // Generate the alphabet & pass it to the turtle
             lsystem.Generate();
             turtle.SetAlphabet(lsystem.GetAlphabet());
             turtle.DrawPlant();
-
+            // Adjust turtle ratios
             turtle.ChangeLength(lengthRatio);
             turtle.ChangeWidth(widthRatio);
-
+            // Get vector arrays
             GetTreeBranches();
             transform.position = currentP;
             transform.rotation = currentR;
 
-            // Check for number of segments
-            // Combining meshes has its limit and I didn't want to display combine errors
-            if (branches.Count < 500)
-            {
-                DestroyTree();
-                RenderTree();
-                CombineMeshes();
-            }
-            else
-            {
-                generations = 6;
-            }
+            DestroyTree();
+            RenderTree();
+            CombineMeshes();
+
             // Due to combining meshes the transform appears to be rotated
             // so rotate it back upwards
             transform.Rotate(Vector3.right * 90.0f);
             rotated = true;
         }
-
-    }
-    void DisplayMesh(bool display)
-    {
-        foreach (GameObject g in treeBranches)
-        {
-            g.SetActive(display);
-        }
     }
 
-    void DestroyBranch(GameObject g)
-    {
-        Destroy(g);
-    }
-
+    // Destroy all created branch objects
     void DestroyTree()
     {
         foreach (GameObject g in treeBranches)
@@ -115,23 +93,20 @@ public class LifeForm : MonoBehaviour {
             Destroy(g);
         }
     }
-
+    // Make new objects with rendered meshes
     void RenderTree()
     {
         filters = new List<MeshFilter>();
-        Debug.Log("Number of rendered fragments: "+treeBranches.Count);
         foreach (Segment e in branches)
         {
             MakeBranch(e);
         }
     }
-
+    // Get vector lists
     void GetTreeBranches()
     {
         branches = turtle.GetBranches();
         circles = turtle.GetCircles();
-
-        Debug.Log("Number of Segments: "+branches.Count+" Number of Circle Points: "+circles.Count * treeRoundness);
     }
 
     void CombineMeshes()
