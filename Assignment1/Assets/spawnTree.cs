@@ -12,10 +12,12 @@ public class spawnTree : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (transform.position.y <= 0.5)
+        if (transform.position.y <= 0.55f)
         {
-            Vector3 pos = new Vector3(transform.position.x, 0, transform.position.z);
-            Instantiate(trees[Random.Range(0, trees.Length - 1)], pos, new Quaternion());
+            Vector3 pos = transform.position;
+            pos.y = 0;
+            GameObject newTree = (GameObject)Instantiate(trees[Random.Range(0, trees.Length - 1)], pos, new Quaternion());
+            //newTree.transform.position = transform.position;
             Destroy(this.gameObject);
         }
 	}

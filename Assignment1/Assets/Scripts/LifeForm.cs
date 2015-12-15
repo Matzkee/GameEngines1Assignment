@@ -34,7 +34,7 @@ public class LifeForm : MonoBehaviour {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         treeBranches = new List<GameObject>();
-        
+
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90.0f);
         // Rules can be applied in an inspector, once game is started all information is
@@ -83,6 +83,10 @@ public class LifeForm : MonoBehaviour {
             transform.Rotate(Vector3.right * 90.0f);
             rotated = true;
         }
+        // Future Work: The tree combining of branch meshes is messing up with the positioning
+        // of the rendered component, for now this piece of code is subtracting current position
+        // from itself to position the render with debug lines
+        transform.position -= transform.position;
     }
 
     // Destroy all created branch objects
@@ -128,7 +132,7 @@ public class LifeForm : MonoBehaviour {
         transform.GetComponent<MeshRenderer>().material = treeBark;
         transform.gameObject.SetActive(true);
 
-        // Destroy the elftover objects
+        // Destroy the leftover objects
         DestroyTree();
     }
 
