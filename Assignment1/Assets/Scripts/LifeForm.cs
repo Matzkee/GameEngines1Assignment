@@ -36,8 +36,7 @@ public class LifeForm : MonoBehaviour {
         treeBranches = new List<GameObject>();
 
         // Look up so we rotate the tree structure
-        transform.Rotate(Vector3.right * -90);
-
+        transform.Rotate(Vector3.right * -90.0f);
         // Rules can be applied in an inspector, once game is started all information is
         // taken from an editor
         if (ruleChars != null)
@@ -56,7 +55,7 @@ public class LifeForm : MonoBehaviour {
 	
 	void Update () {
         // For now set the generations to be applied each time clicked
-        if (Input.GetMouseButtonDown(0) && generations != 5)
+        if (Input.GetMouseButtonDown(0) && generations < 6)
         {
             if (rotated)
             {
@@ -85,6 +84,10 @@ public class LifeForm : MonoBehaviour {
                 RenderTree();
                 CombineMeshes();
             }
+            else
+            {
+                generations = 6;
+            }
             // Due to combining meshes the transform appears to be rotated
             // so rotate it back upwards
             transform.Rotate(Vector3.right * 90.0f);
@@ -98,6 +101,11 @@ public class LifeForm : MonoBehaviour {
         {
             g.SetActive(display);
         }
+    }
+
+    void DestroyBranch(GameObject g)
+    {
+        Destroy(g);
     }
 
     void DestroyTree()
@@ -145,7 +153,8 @@ public class LifeForm : MonoBehaviour {
         transform.GetComponent<MeshRenderer>().material = treeBark;
         transform.gameObject.SetActive(true);
 
-        
+        // Destroy the elftover objects
+        DestroyTree();
     }
 
     // Make new object for each branch with mesh and material applied
