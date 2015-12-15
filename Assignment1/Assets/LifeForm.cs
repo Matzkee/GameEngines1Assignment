@@ -28,6 +28,7 @@ public class LifeForm : MonoBehaviour {
     public bool skeletonCircles = false;
 
     private int generations = 0;
+    private bool rotated = false;
 
 	void Start () {
         gameObject.AddComponent<MeshFilter>();
@@ -57,6 +58,11 @@ public class LifeForm : MonoBehaviour {
         // For now set the generations to be applied each time clicked
         if (Input.GetMouseButtonDown(0) && generations != 5)
         {
+            if (rotated)
+            {
+                transform.Rotate(Vector3.right * -90.0f);
+                rotated = false;
+            }
             generations++;
             Vector3 currentP = transform.position;
             Quaternion currentR = transform.rotation;
@@ -65,7 +71,7 @@ public class LifeForm : MonoBehaviour {
             turtle.DrawPlant();
 
             turtle.ChangeLength(lengthRatio);
-            turtle.ChangeWidth(0.8f);
+            turtle.ChangeWidth(widthRatio);
 
             GetTreeBranches();
             transform.position = currentP;
@@ -79,6 +85,10 @@ public class LifeForm : MonoBehaviour {
                 RenderTree();
                 CombineMeshes();
             }
+            // Due to combining meshes the transform appears to be rotated
+            // so rotate it back upwards
+            transform.Rotate(Vector3.right * 90.0f);
+            rotated = true;
         }
 
     }
@@ -135,8 +145,7 @@ public class LifeForm : MonoBehaviour {
         transform.GetComponent<MeshRenderer>().material = treeBark;
         transform.gameObject.SetActive(true);
 
-        // destroy the leftover objects
-        DestroyTree();
+        
     }
 
     // Make new object for each branch with mesh and material applied
