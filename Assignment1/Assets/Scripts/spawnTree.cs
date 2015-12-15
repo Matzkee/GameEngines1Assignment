@@ -16,7 +16,7 @@ public class spawnTree : MonoBehaviour {
         {
             Vector3 pos = transform.position;
             pos.y = 0;
-            GameObject newTree = (GameObject)Instantiate(trees[Random.Range(0, trees.Length - 1)], pos, new Quaternion());
+            Instantiate(trees[Random.Range(0, trees.Length - 1)], pos, new Quaternion());
             //newTree.transform.position = transform.position;
             Destroy(this.gameObject);
         }

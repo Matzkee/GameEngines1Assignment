@@ -2,13 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LifeForm : MonoBehaviour {
+public class ControlledLifeForm : MonoBehaviour {
     
     Rule[] ruleset;
     LSystem lsystem;
     Turtle turtle;
     List<Segment> branches;
     List<Circle> circles;
+
+    public KeyCode generationKey;
 
     List<MeshFilter> filters;
     List<GameObject> treeBranches;
@@ -27,16 +29,14 @@ public class LifeForm : MonoBehaviour {
     public bool skeletonLines = false;
     public bool skeletonCircles = false;
 
-    public int generations = 0;
+    int generations = 0;
     private bool rotated = false;
+    Vector3 save;
 
-	void Start () {
+    void Start () {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         treeBranches = new List<GameObject>();
-
-        //Randomize generation numbers
-        generations = Random.Range(1,generations);
 
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90.0f);
@@ -53,12 +53,16 @@ public class LifeForm : MonoBehaviour {
         lsystem = new LSystem(axiom,ruleset);
 
         turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
+    }
 
-        // Draw the tree
-        for (int i = 0; i < generations; i++)
+    void Update()
+    {
+        if (Input.GetKeyDown(generationKey) && generations < 5)
         {
+            generations++;
             if (rotated)
             {
+                transform.position = save;
                 transform.Rotate(Vector3.right * -90.0f);
                 rotated = false;
             }
@@ -77,19 +81,22 @@ public class LifeForm : MonoBehaviour {
             transform.position = currentP;
             transform.rotation = currentR;
 
-            DestroyTree();
-            RenderTree();
-            CombineMeshes();
+            // Prevent from rendering to many branches
+            if (branches.Count < 500)
+            {
+                DestroyTree();
+                RenderTree();
+                CombineMeshes();
+            }
 
             // Due to combining meshes the transform appears to be rotated
             // so rotate it back upwards
             transform.Rotate(Vector3.right * 90.0f);
             rotated = true;
+
+            save = transform.position;
+            transform.position -= transform.position;
         }
-        // Future Work: The tree combining of branch meshes is messing up with the positioning
-        // of the rendered component, for now this piece of code is subtracting current position
-        // from itself to position the render with debug lines
-        transform.position -= transform.position;
     }
 
     // Destroy all created branch objects
