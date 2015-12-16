@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LifeForm : MonoBehaviour {
-    
+
+    GameObject treeStructure = null;
+
     Rule[] ruleset;
     LSystem lsystem;
     Turtle turtle;
     List<Segment> branches;
     List<Circle> circles;
-
-    List<MeshFilter> filters;
-    List<GameObject> treeBranches;
+    
     public Material treeBark;
 
     public float length = 5.0f;
@@ -30,10 +30,6 @@ public class LifeForm : MonoBehaviour {
     public int generations = 0;
 
 	void Start () {
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
-        treeBranches = new List<GameObject>();
-
         //Randomize generation numbers
         generations = Random.Range(1,generations);
 
@@ -49,40 +45,47 @@ public class LifeForm : MonoBehaviour {
                 ruleset[i] = new Rule(ruleChars[i], ruleStrings[i]);
             }
         }
+        // Create the L-System and a new Turtle
         lsystem = new LSystem(axiom,ruleset);
 
         turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
 
-        // Draw the tree
+        // Generate the alphabet n(generations) times
         for (int i = 0; i < generations; i++)
         {
-            Vector3 currentP = transform.position;
-            Quaternion currentR = transform.rotation;
-
-            // Generate the alphabet & pass it to the turtle
             lsystem.Generate();
-            turtle.SetAlphabet(lsystem.GetAlphabet());
-            turtle.DrawPlant();
-            // Adjust turtle ratios
+            
+            // Adjust turtle ratios 
+            // (normaly it happens after the skeleton generation, 
+            // in this case we need to apply it now)
             turtle.ChangeLength(lengthRatio);
             turtle.ChangeWidth(widthRatio);
-            // Get vector arrays
-            GetTreeBranches();
-            transform.position = currentP;
-            transform.rotation = currentR;
-
-            DestroyTree();
-            RenderTree(branches);
-            
         }
+        // Save current transform position & rotation
+        Vector3 currentP = transform.position;
+        Quaternion currentR = transform.rotation;
+
+
+        // Generate the alphabet & pass it to the turtle
+        turtle.SetAlphabet(lsystem.GetAlphabet());
+        turtle.DrawPlant();
+
+
+        // Get vector arrays
+        GetTreeBranches();
+        transform.position = currentP;
+        transform.rotation = currentR;
+
+        DestroyTree();
+        RenderTree(branches);
     }
 
     // Destroy all created branch objects
     void DestroyTree()
     {
-        foreach (GameObject g in treeBranches)
+        if (treeStructure != null)
         {
-            Destroy(g);
+            Destroy(treeStructure);
         }
     }
     // Get vector lists
@@ -91,41 +94,19 @@ public class LifeForm : MonoBehaviour {
         branches = turtle.GetBranches();
         circles = turtle.GetCircles();
     }
-    // Edit: See if this method is needed
-    void CombineMeshes()
-    {
-        // Method taken from Unity's combine meshes reference page
-        // http://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html
-        // This method combines the meshes previously accumulated in a list
-        CombineInstance[] combine = new CombineInstance[filters.Count];
-        int i = 0;
-        while (i < filters.Count)
-        {
-            combine[i].mesh = filters[i].sharedMesh;
-            combine[i].transform = filters[i].transform.localToWorldMatrix;
-            filters[i].gameObject.SetActive(false);
-            i++;
-        }
-        transform.GetComponent<MeshFilter>().mesh = new Mesh();
-        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-        transform.GetComponent<MeshRenderer>().material = treeBark;
-        transform.gameObject.SetActive(true);
-
-        // Destroy the leftover objects
-        DestroyTree();
-    }
 
     // Make new object for each branch with mesh and material applied
     void RenderTree(List<Segment> _segments)
     {
-        GameObject branch = new GameObject("Tree Structure");
+        // Generate new object with MeshFilter and Renderer
+        treeStructure = new GameObject("Tree Structure");
         Mesh mesh;
         MeshFilter filter;
         MeshRenderer meshRenderer;
 
-        filter = branch.AddComponent<MeshFilter>();
+        filter = treeStructure.AddComponent<MeshFilter>();
         mesh = filter.mesh;
-        meshRenderer = branch.AddComponent<MeshRenderer>();
+        meshRenderer = treeStructure.AddComponent<MeshRenderer>();
         mesh.Clear();
 
         int numOfPoints = treeRoundness;
@@ -169,10 +150,8 @@ public class LifeForm : MonoBehaviour {
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
         meshRenderer.material = treeBark;
-
-        branch.transform.parent = transform;
-        
-        treeBranches.Add(branch);
+        // Set the tree structure object to its parent
+        treeStructure.transform.parent = transform;
     }
 
     // Draw debug lines
