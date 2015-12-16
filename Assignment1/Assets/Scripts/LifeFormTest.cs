@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LifeForm : MonoBehaviour {
+public class LifeFormTest : MonoBehaviour {
     
     Rule[] ruleset;
     LSystem lsystem;
@@ -28,6 +28,7 @@ public class LifeForm : MonoBehaviour {
     public bool skeletonCircles = false;
 
     public int generations = 0;
+    private bool rotated = false;
 
 	void Start () {
         gameObject.AddComponent<MeshFilter>();
@@ -56,6 +57,11 @@ public class LifeForm : MonoBehaviour {
         // Draw the tree
         for (int i = 0; i < generations; i++)
         {
+            if (rotated)
+            {
+                transform.Rotate(Vector3.right * -90.0f);
+                rotated = false;
+            }
             Vector3 currentP = transform.position;
             Quaternion currentR = transform.rotation;
 
@@ -72,9 +78,18 @@ public class LifeForm : MonoBehaviour {
             transform.rotation = currentR;
 
             DestroyTree();
-            RenderTree(branches);
-            
+            RenderTree();
+            //CombineMeshes();
+
+            // Due to combining meshes the transform appears to be rotated
+            // so rotate it back upwards
+            transform.Rotate(Vector3.right * 90.0f);
+            rotated = true;
         }
+        // Future Work: The tree combining of branch meshes is messing up with the positioning
+        // of the rendered component, for now this piece of code is subtracting current position
+        // from itself to position the render with debug lines
+        transform.position -= transform.position;
     }
 
     // Destroy all created branch objects
@@ -85,13 +100,19 @@ public class LifeForm : MonoBehaviour {
             Destroy(g);
         }
     }
+    // Make new objects with rendered meshes
+    void RenderTree()
+    {
+        filters = new List<MeshFilter>();
+        MakeBranch(branches);
+    }
     // Get vector lists
     void GetTreeBranches()
     {
         branches = turtle.GetBranches();
         circles = turtle.GetCircles();
     }
-    // Edit: See if this method is needed
+
     void CombineMeshes()
     {
         // Method taken from Unity's combine meshes reference page
@@ -116,9 +137,9 @@ public class LifeForm : MonoBehaviour {
     }
 
     // Make new object for each branch with mesh and material applied
-    void RenderTree(List<Segment> _segments)
+    void MakeBranch(List<Segment> _segments)
     {
-        GameObject branch = new GameObject("Tree Structure");
+        GameObject branch = new GameObject();
         Mesh mesh;
         MeshFilter filter;
         MeshRenderer meshRenderer;
@@ -171,8 +192,8 @@ public class LifeForm : MonoBehaviour {
         meshRenderer.material = treeBark;
 
         branch.transform.parent = transform;
-        
         treeBranches.Add(branch);
+        filters.Add(filter);
     }
 
     // Draw debug lines
