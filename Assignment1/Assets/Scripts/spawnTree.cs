@@ -17,7 +17,7 @@ public class spawnTree : MonoBehaviour {
             Vector3 pos = transform.position;
             pos.y = 0;
             Instantiate(trees[Random.Range(0, trees.Length - 1)], pos, new Quaternion());
-            //newTree.transform.position = transform.position;
+            // dostroy the cube as it's no longer needed
             Destroy(this.gameObject);
         }
 	}

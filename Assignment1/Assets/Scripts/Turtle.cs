@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-/*  L-Systems contains 3 main components:
+/*  L-Systems contain 3 main components:
         Alphabet - composition of characters which the program works with
         Axiom - an Initial state of the system using characters from alphabet
         Rules - rules of an L-system applied recursively (predecessor & successor)
@@ -116,6 +116,7 @@ public class Turtle{
             {
                 treeTransform.Rotate(Vector3.right * -angleX);
             }
+            // Save current position
             else if (c == '[')
             {
                 Coord currentCoord = new Coord(treeTransform.position, treeTransform.rotation, 

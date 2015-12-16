@@ -2,19 +2,35 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+    To view the generation process of plants:
+        Attach this script to a new object and copy rules from other tree objects
+        Make sure to specify: 
+            - Rule character and its corresponding rule in editor
+            - Axiom above rules (this is the starting clause of the plant growth)
+            - Also add the material of your choice for the plant structure/tree bark
+            - Specify the number of generations
+            
+            ---- BE CAREFUL ----
+            When specifying number of generations, during run time you might come to an error
+            specifying index for triangles & other mesh attributes of beeing too big.
+            Due to nature of this code the amount of polygons made in 1 object might exceed
+            the amount allowed leading to failure in displaying the tree mesh.
+
+            It is recommended to not exceed the number of generations preset on the prefabs
+    */
 public class ControlledLifeForm : MonoBehaviour {
-    
+
+    GameObject treeStructure = null;
+
     Rule[] ruleset;
     LSystem lsystem;
     Turtle turtle;
     List<Segment> branches;
     List<Circle> circles;
 
-    public KeyCode generationKey;
-
-    List<MeshFilter> filters;
-    List<GameObject> treeBranches;
     public Material treeBark;
+    public KeyCode treeGrowthKey;
 
     public float length = 5.0f;
     public float angleX = 22.5f;
@@ -29,15 +45,11 @@ public class ControlledLifeForm : MonoBehaviour {
     public bool skeletonLines = false;
     public bool skeletonCircles = false;
 
-    int generations = 0;
-    private bool rotated = false;
-    Vector3 save;
+    public int generations = 0;
+    private int clickedTimes = 0;
 
-    void Start () {
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
-        treeBranches = new List<GameObject>();
-
+    void Start()
+    {
         // Look up so we rotate the tree structure
         transform.Rotate(Vector3.right * -90.0f);
         // Rules can be applied in an inspector, once game is started all information is
@@ -45,75 +57,56 @@ public class ControlledLifeForm : MonoBehaviour {
         if (ruleChars != null)
         {
             ruleset = new Rule[ruleChars.Length];
-            for(int i = 0; i < ruleChars.Length; i++)
+            for (int i = 0; i < ruleChars.Length; i++)
             {
                 ruleset[i] = new Rule(ruleChars[i], ruleStrings[i]);
             }
         }
-        lsystem = new LSystem(axiom,ruleset);
+        // Create the L-System and a new Turtle
+        lsystem = new LSystem(axiom, ruleset);
 
         turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(generationKey) && generations < 5)
+        // Construct a next generation of tree type with each click
+        if (Input.GetKeyDown(treeGrowthKey) && clickedTimes < generations)
         {
-            generations++;
-            if (rotated)
-            {
-                transform.position = save;
-                transform.Rotate(Vector3.right * -90.0f);
-                rotated = false;
-            }
+            clickedTimes++;
+            // Save current transform position & rotation
             Vector3 currentP = transform.position;
             Quaternion currentR = transform.rotation;
 
-            // Generate the alphabet & pass it to the turtle
+            // Generate the alphabet
             lsystem.Generate();
+
+            // Generate the alphabet & pass it to the turtle
             turtle.SetAlphabet(lsystem.GetAlphabet());
             turtle.DrawPlant();
-            // Adjust turtle ratios
-            turtle.ChangeLength(lengthRatio);
-            turtle.ChangeWidth(widthRatio);
+
+
             // Get vector arrays
             GetTreeBranches();
             transform.position = currentP;
             transform.rotation = currentR;
 
-            // Prevent from rendering to many branches
-            if (branches.Count < 500)
-            {
-                DestroyTree();
-                RenderTree();
-                CombineMeshes();
-            }
+            // Adjust turtle ratios
+            turtle.ChangeLength(lengthRatio);
+            turtle.ChangeWidth(widthRatio);
 
-            // Due to combining meshes the transform appears to be rotated
-            // so rotate it back upwards
-            transform.Rotate(Vector3.right * 90.0f);
-            rotated = true;
-
-            save = transform.position;
-            transform.position -= transform.position;
+            // Finally render the tree structure
+            DestroyTree();
+            RenderTree(branches);
         }
     }
 
-    // Destroy all created branch objects
+    // Destroy previous tree structure, if exist
     void DestroyTree()
     {
-        foreach (GameObject g in treeBranches)
+        if (treeStructure != null)
         {
-            Destroy(g);
-        }
-    }
-    // Make new objects with rendered meshes
-    void RenderTree()
-    {
-        filters = new List<MeshFilter>();
-        foreach (Segment e in branches)
-        {
-            MakeBranch(e);
+            Destroy(treeStructure);
         }
     }
     // Get vector lists
@@ -123,97 +116,69 @@ public class ControlledLifeForm : MonoBehaviour {
         circles = turtle.GetCircles();
     }
 
-    void CombineMeshes()
-    {
-        // Method taken from Unity's combine meshes reference page
-        // http://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html
-        // This method combines the meshes previously accumulated in a list
-        CombineInstance[] combine = new CombineInstance[filters.Count];
-        int i = 0;
-        while (i < filters.Count)
-        {
-            combine[i].mesh = filters[i].sharedMesh;
-            combine[i].transform = filters[i].transform.localToWorldMatrix;
-            filters[i].gameObject.SetActive(false);
-            i++;
-        }
-        transform.GetComponent<MeshFilter>().mesh = new Mesh();
-        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-        transform.GetComponent<MeshRenderer>().material = treeBark;
-        transform.gameObject.SetActive(true);
-
-        // Destroy the leftover objects
-        DestroyTree();
-    }
-
     // Make new object for each branch with mesh and material applied
-    void MakeBranch(Segment s)
+    void RenderTree(List<Segment> _segments)
     {
-        GameObject branch = new GameObject();
+        // Generate new object with MeshFilter and Renderer
+        treeStructure = new GameObject("Tree Structure");
         Mesh mesh;
         MeshFilter filter;
         MeshRenderer meshRenderer;
 
-        filter = branch.AddComponent<MeshFilter>();
+        filter = treeStructure.AddComponent<MeshFilter>();
         mesh = filter.mesh;
-        meshRenderer = branch.AddComponent<MeshRenderer>();
+        meshRenderer = treeStructure.AddComponent<MeshRenderer>();
         mesh.Clear();
 
-        int numOfPoints = s.startCircle.circlePoints.Count;
+        int numOfPoints = treeRoundness;
         // 3 Vertices per triangle, 2 triangles
         int verticesPerCell = 6;
-        int vertexCount = (verticesPerCell * 2 * numOfPoints);
+        int vertexCount = (verticesPerCell * 2 * numOfPoints) * _segments.Count;
 
         // Alocate new arrays
         Vector3[] vertices = new Vector3[vertexCount];
         int[] triangles = new int[vertexCount];
-        Vector2[] uvs = new Vector2[vertexCount];
 
         int vertexIndex = 0;
 
-        for (int i = 0; i < numOfPoints; i++)
+        foreach (Segment s in _segments)
         {
-            Vector3 cellBottomLeft = s.startCircle.circlePoints[i];
-            Vector3 cellTopLeft = s.endCircle.circlePoints[i];
-            Vector3 cellTopRight = s.endCircle.circlePoints[(i + 1) % numOfPoints];
-            Vector3 cellBottomRight = s.startCircle.circlePoints[(i + 1) % numOfPoints];
-
-            int startVertex = vertexIndex;
-            vertices[vertexIndex++] = cellTopLeft;
-            vertices[vertexIndex++] = cellBottomLeft;
-            vertices[vertexIndex++] = cellBottomRight;
-            vertices[vertexIndex++] = cellTopLeft;
-            vertices[vertexIndex++] = cellBottomRight;
-            vertices[vertexIndex++] = cellTopRight;
-
-            // Make triangles
-            for (int j = 0; j < verticesPerCell; j++)
+            for (int i = 0; i < numOfPoints; i++)
             {
-                triangles[startVertex + j] = startVertex + j;
-            }
-        }
+                Vector3 cellBottomLeft = s.startCircle.circlePoints[i];
+                Vector3 cellTopLeft = s.endCircle.circlePoints[i];
+                Vector3 cellTopRight = s.endCircle.circlePoints[(i + 1) % numOfPoints];
+                Vector3 cellBottomRight = s.startCircle.circlePoints[(i + 1) % numOfPoints];
 
-        for (int i = 0; i < uvs.Length; i++)
-        {
-            uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+                int startVertex = vertexIndex;
+                vertices[vertexIndex++] = cellTopLeft;
+                vertices[vertexIndex++] = cellBottomLeft;
+                vertices[vertexIndex++] = cellBottomRight;
+                vertices[vertexIndex++] = cellTopLeft;
+                vertices[vertexIndex++] = cellBottomRight;
+                vertices[vertexIndex++] = cellTopRight;
+
+                // Make triangles
+                for (int j = 0; j < verticesPerCell; j++)
+                {
+                    triangles[startVertex + j] = startVertex + j;
+                }
+            }
         }
 
         // Assign values to the mesh
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        mesh.uv = uvs;
         mesh.RecalculateNormals();
         meshRenderer.material = treeBark;
-
-        branch.transform.parent = transform;
-        treeBranches.Add(branch);
-        filters.Add(filter);
+        // Set the tree structure object to its parent
+        treeStructure.transform.parent = transform;
     }
 
     // Draw debug lines
     void OnDrawGizmos()
     {
-        
+
         if (branches != null && skeletonLines)
         {
             foreach (Segment b in branches)
@@ -222,7 +187,7 @@ public class ControlledLifeForm : MonoBehaviour {
                 Gizmos.DrawLine(b.start, b.end);
             }
         }
-        
+
         if (circles != null && skeletonCircles)
         {
             for (int i = 0; i < circles.Count; i++)

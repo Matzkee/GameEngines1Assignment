@@ -2,7 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
+/*
+    Class for FPS controlls
+    
+    Author of this class code is Bryan Duggan:
+    https://github.com/skooter500/gameengines2015
+    */
 public class FPSController : MonoBehaviour {
 
 	Vector3 position;

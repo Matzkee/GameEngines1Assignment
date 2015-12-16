@@ -51,7 +51,7 @@ public class LifeForm : MonoBehaviour {
         turtle = new Turtle(startRadius, treeRoundness, lsystem.GetAlphabet(), length, angleX, angleY, gameObject);
 
         // Generate the alphabet n(generations) times
-        for (int i = 0; i < generations; i++)
+        for (int i = 0; i <= generations; i++)
         {
             lsystem.Generate();
             
@@ -80,7 +80,7 @@ public class LifeForm : MonoBehaviour {
         RenderTree(branches);
     }
 
-    // Destroy all created branch objects
+    // Destroy previous tree structure, if exist
     void DestroyTree()
     {
         if (treeStructure != null)
